@@ -1,6 +1,6 @@
 package hanghaeboard.api.service.board;
 
-import hanghaeboard.api.service.board.request.CreateBoardRequest;
+import hanghaeboard.api.service.board.request.CreateBoardServiceRequest;
 import hanghaeboard.api.service.board.response.CreateBoardResponse;
 import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.board.BoardRepository;
@@ -13,7 +13,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
 
-    public CreateBoardResponse createBoard(CreateBoardRequest request) {
+    public CreateBoardResponse createBoard(CreateBoardServiceRequest request) {
         Board board = request.toEntity();
         Board savedBoard = boardRepository.save(board);
 

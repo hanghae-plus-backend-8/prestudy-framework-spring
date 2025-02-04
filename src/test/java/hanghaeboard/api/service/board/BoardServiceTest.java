@@ -1,6 +1,6 @@
 package hanghaeboard.api.service.board;
 
-import hanghaeboard.api.service.board.request.CreateBoardRequest;
+import hanghaeboard.api.service.board.request.CreateBoardServiceRequest;
 import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.board.BoardRepository;
 import hanghaeboard.domain.member.Member;
@@ -15,7 +15,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -37,7 +36,7 @@ class BoardServiceTest {
         Member member = Member.builder().username("yeop").password("1234").build();
         memberRepository.save(member);
 
-        CreateBoardRequest request = CreateBoardRequest.builder()
+        CreateBoardServiceRequest request = CreateBoardServiceRequest.builder()
                 .member(member)
                 .title("title")
                 .content("content")

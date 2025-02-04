@@ -1,6 +1,7 @@
-package hanghaeboard.api.service.board.request;
+package hanghaeboard.api.controller.board.request;
 
-import hanghaeboard.domain.board.Board;
+import com.fasterxml.jackson.annotation.JsonGetter;
+import hanghaeboard.api.service.board.request.CreateBoardServiceRequest;
 import hanghaeboard.domain.member.Member;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,19 +11,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateBoardRequest {
 
-    private Member member;
+    private Long memberId;
     private String title;
     private String content;
 
     @Builder
-    private CreateBoardRequest(Member member, String title, String content) {
-        this.member = member;
+    private CreateBoardRequest(Long memberId, String title, String content) {
+        this.memberId = memberId;
         this.title = title;
         this.content = content;
     }
 
-    public Board toEntity(){
-        return Board.builder()
+    public CreateBoardServiceRequest to(Member member) {
+        return CreateBoardServiceRequest.builder()
                 .member(member)
                 .title(title)
                 .content(content)
