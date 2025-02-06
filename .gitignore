@@ -35,8 +35,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-generated
-
-/src/main/resources/static/
-/api/src/main/resources/static/
