@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class CreateBoardResponse {
+
     private Long id;
     private Member member;
     private String title;

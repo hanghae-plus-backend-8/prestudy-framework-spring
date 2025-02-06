@@ -5,6 +5,7 @@ import hanghaeboard.api.controller.board.request.CreateBoardRequest;
 import hanghaeboard.api.service.board.BoardService;
 import hanghaeboard.api.service.member.MemberService;
 import hanghaeboard.domain.member.Member;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ class BoardControllerTest {
     @MockitoBean
     private MemberService memberService;
 
+    @AfterEach
+    void tearDown() {
+
+    }
+
     @DisplayName("게시물을 생성할 수 있다.")
     @Test
     void createBoard() throws Exception{
@@ -47,15 +53,33 @@ class BoardControllerTest {
                 .content("content")
                 .build();
 
-        // when
+        // when // then
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/board/create")
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
                 .andExpect(status().isOk());
-
-        // then
     }
+
+    @DisplayName("게시물을 생성할 수 있다.")
+    @Test
+    void createBoardWithoutMember() throws Exception{
+        // given
+        CreateBoardRequest request = CreateBoardRequest.builder()
+                .memberId(1L)
+                .title("title")
+                .content("content")
+                .build();
+
+        // when // then
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/board/create")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 
 }
