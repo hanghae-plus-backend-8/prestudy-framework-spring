@@ -25,4 +25,11 @@ public class ApiResponse<T> {
             .data(data)
             .build();
     }
+
+    public static ApiResponse<Void> error(HttpStatus status, String message) {
+        return ApiResponse.<Void>builder()
+            .code(status.value())
+            .message(message)
+            .build();
+    }
 }

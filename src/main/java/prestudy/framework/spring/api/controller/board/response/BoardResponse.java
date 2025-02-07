@@ -11,13 +11,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class BoardResponse {
 
+    private Long id;
     private String title;
     private String content;
     private String writer;
     private LocalDateTime createdDate;
 
     @Builder
-    private BoardResponse(String title, String content, String writer, LocalDateTime createdDate) {
+    private BoardResponse(Long id, String title, String content, String writer, LocalDateTime createdDate) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.writer = writer;
@@ -26,6 +28,7 @@ public class BoardResponse {
 
     public static BoardResponse of(Board board) {
         return BoardResponse.builder()
+            .id(board.getId())
             .title(board.getTitle())
             .content(board.getContent())
             .writer(board.getWriter())

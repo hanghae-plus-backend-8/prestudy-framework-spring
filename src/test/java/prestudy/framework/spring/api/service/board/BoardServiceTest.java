@@ -4,10 +4,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import prestudy.framework.spring.support.IntegrationTestSupport;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
+import prestudy.framework.spring.api.service.board.command.BoardCreateCommand;
 import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.board.BoardRepository;
+import prestudy.framework.spring.support.IntegrationTestSupport;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,11 +56,31 @@ class BoardServiceTest extends IntegrationTestSupport {
 
         // then
         assertThat(boards).hasSize(2)
-            .extracting("title", "content")
+            .extracting("title", "content", "writer", "createdDate")
             .containsExactly(
-                tuple("다음글 제목", "다음글 내용"),
-                tuple("제목", "내용")
+                tuple("다음글 제목", "다음글 내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 1)),
+                tuple("제목", "내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 0))
             );
     }
 
+    @DisplayName("게시글을 작성한다.")
+    @Test
+    void createBoard() {
+        // given
+        BoardCreateCommand createCommand = BoardCreateCommand.builder()
+            .title("제목")
+            .content("내용")
+            .writer("홍길동")
+            .password("1234")
+            .build();
+
+        // when
+        BoardResponse response = boardService.createBoard(createCommand);
+
+        // then
+        assertThat(response.getId()).isNotNull();
+        assertThat(response.getTitle()).isEqualTo("제목");
+        assertThat(response.getContent()).isEqualTo("내용");
+        assertThat(response.getWriter()).isEqualTo("홍길동");
+    }
 }

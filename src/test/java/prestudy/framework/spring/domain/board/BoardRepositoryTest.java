@@ -46,10 +46,10 @@ class BoardRepositoryTest extends IntegrationTestSupport {
         // then
         assertThat(boards)
             .hasSize(2)
-            .extracting("title", "content")
+            .extracting("title", "content", "writer", "createdDate")
             .containsExactly(
-                tuple("다음글 제목", "다음글 내용"),
-                tuple("제목", "내용")
+                tuple("다음글 제목", "다음글 내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 1)),
+                tuple("제목", "내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 0))
             );
     }
 }
