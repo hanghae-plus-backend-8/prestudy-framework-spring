@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.service.board.command.BoardCreateCommand;
+import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
 import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.board.BoardRepository;
@@ -39,7 +40,6 @@ public class BoardService {
 
     public BoardResponse updateBoard(BoardUpdateCommand command) {
         Board findBoard = findBoardById(command.getId());
-
         if (findBoard.isInvalidPassword(command.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
@@ -49,6 +49,15 @@ public class BoardService {
         findBoard.updateWriter(command.getWriter());
 
         return BoardResponse.of(findBoard);
+    }
+
+    public void deleteBoard(BoardDeleteCommand command) {
+        Board findBoard = findBoardById(command.getId());
+        if (findBoard.isInvalidPassword(command.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        boardRepository.delete(findBoard);
     }
 
     private Board findBoardById(Long id) {

@@ -23,7 +23,7 @@ public class BoardCreateRequest {
     private String password;
 
     @Builder
-    public BoardCreateRequest(String title, String content, String writer, String password) {
+    private BoardCreateRequest(String title, String content, String writer, String password) {
         this.title = title;
         this.content = content;
         this.writer = writer;

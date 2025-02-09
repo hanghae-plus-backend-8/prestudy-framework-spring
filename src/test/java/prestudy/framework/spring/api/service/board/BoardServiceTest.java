@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.service.board.command.BoardCreateCommand;
+import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
 import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.board.BoardRepository;
@@ -13,6 +14,7 @@ import prestudy.framework.spring.support.IntegrationTestSupport;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,14 +37,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void getBoards() {
         // given
-        Board board1 = Board.builder()
-            .title("제목")
-            .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
-            .build();
-
+        Board board1 = createBoardEntity();
         Board board2 = Board.builder()
             .title("다음글 제목")
             .content("다음글 내용")
@@ -90,14 +85,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void getBoardById() {
         // given
-        Board board = Board.builder()
-            .title("제목")
-            .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
-            .build();
-
+        Board board = createBoardEntity();
         Board savedBoard = boardRepository.save(board);
 
         // when
@@ -115,14 +103,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void getBoardByInvalidId() {
         // given
-        Board board = Board.builder()
-            .title("제목")
-            .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
-            .build();
-
+        Board board = createBoardEntity();
         Board savedBoard = boardRepository.save(board);
 
         // when & then
@@ -137,14 +118,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void updateBoardWithInvalidId() {
         // given
-        Board board = Board.builder()
-            .title("제목")
-            .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
-            .build();
-
+        Board board = createBoardEntity();
         Board savedBoard = boardRepository.save(board);
 
         // when & then
@@ -166,14 +140,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void updateBoardWithInvalidPassword() {
         // given
-        Board board = Board.builder()
-            .title("제목")
-            .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
-            .build();
-
+        Board board = createBoardEntity();
         Board savedBoard = boardRepository.save(board);
 
         // when & then
@@ -193,14 +160,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void updateBoard() {
         // given
-        Board board = Board.builder()
-            .title("제목")
-            .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
-            .build();
-
+        Board board = createBoardEntity();
         Board savedBoard = boardRepository.save(board);
 
         // when
@@ -218,5 +178,73 @@ class BoardServiceTest extends IntegrationTestSupport {
         assertThat(response.getTitle()).isEqualTo("제목 수정");
         assertThat(response.getContent()).isEqualTo("내용 수정");
         assertThat(response.getWriter()).isEqualTo("홍길순");
+    }
+
+    @DisplayName("삭제 시 ID는 유효해야 한다.")
+    @Test
+    void deleteBoardWithInvalidId() {
+        // given
+        Board board = createBoardEntity();
+        Board savedBoard = boardRepository.save(board);
+
+        // when & then
+        long invalidId = savedBoard.getId() + 1;
+
+        BoardDeleteCommand command = BoardDeleteCommand.builder()
+            .id(invalidId)
+            .password("<PASSWORD>")
+            .build();
+
+        assertThatThrownBy(() -> boardService.deleteBoard(command))
+            .hasMessage("존재하지 않는 게시글입니다.")
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("삭제 시 패스워드는 일치해야한다.")
+    @Test
+    void deleteBoardWithInvalidPassword() {
+        // given
+        Board board = createBoardEntity();
+        Board savedBoard = boardRepository.save(board);
+
+        // when & then
+        BoardDeleteCommand command = BoardDeleteCommand.builder()
+            .id(savedBoard.getId())
+            .password("<INVALID PASSWORD>")
+            .build();
+
+        assertThatThrownBy(() -> boardService.deleteBoard(command))
+            .hasMessage("비밀번호가 일치하지 않습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("게시물을 삭제한다.")
+    @Test
+    void deleteBoard() {
+        // given
+        Board board = createBoardEntity();
+        Board savedBoard = boardRepository.save(board);
+
+        // when
+        BoardDeleteCommand command = BoardDeleteCommand.builder()
+            .id(savedBoard.getId())
+            .password("<PASSWORD>")
+            .build();
+
+        boardService.deleteBoard(command);
+
+        // then
+        Optional<Board> findBoard = boardRepository.findById(savedBoard.getId());
+        assertThat(findBoard).isNotPresent();
+    }
+
+    private Board createBoardEntity() {
+        return Board.builder()
+            .title("제목")
+            .content("내용")
+            .writer("홍길동")
+            .password("<PASSWORD>")
+            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
+            .build();
     }
 }

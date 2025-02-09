@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import prestudy.framework.spring.api.controller.board.request.BoardCreateRequest;
+import prestudy.framework.spring.api.controller.board.request.BoardDeleteRequest;
 import prestudy.framework.spring.api.controller.board.request.BoardUpdateRequest;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.controller.common.response.ApiResponse;
@@ -36,5 +37,12 @@ public class BoardController {
     public ApiResponse<BoardResponse> updateBoard(@PathVariable("id") Long id,
                                                   @Valid @RequestBody BoardUpdateRequest request) {
         return ApiResponse.success(boardService.updateBoard(request.toCommand(id)));
+    }
+
+    @DeleteMapping("/api/v1/boards/{id}")
+    public ApiResponse<Void> updateBoard(@PathVariable("id") Long id,
+                                         @Valid @RequestBody BoardDeleteRequest request) {
+        boardService.deleteBoard(request.toCommand(id));
+        return ApiResponse.success();
     }
 }

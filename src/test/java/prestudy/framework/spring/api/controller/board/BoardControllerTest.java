@@ -4,8 +4,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import prestudy.framework.spring.api.controller.board.request.BoardCreateRequest;
+import prestudy.framework.spring.api.controller.board.request.BoardDeleteRequest;
 import prestudy.framework.spring.api.controller.board.request.BoardUpdateRequest;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
+import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
 import prestudy.framework.spring.support.ControllerTestSupport;
 
@@ -14,6 +16,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -333,5 +336,73 @@ class BoardControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.data.content").value("내용 수정"))
             .andExpect(jsonPath("$.data.writer").value("작성자 수정"))
             .andExpect(jsonPath("$.data.createdDate").value("2025-02-07T12:00:00"));
+    }
+
+    @DisplayName("게시글을 삭제할 때 ID는 유효해야 한다.")
+    @Test
+    void deleteBoardWithInvalidId() throws Exception {
+        // given
+        BoardDeleteRequest request = BoardDeleteRequest.builder()
+            .password("1234")
+            .build();
+
+        doThrow(new IllegalArgumentException("존재하지 않는 게시글입니다."))
+            .when(boardService)
+            .deleteBoard(any(BoardDeleteCommand.class));
+
+        // when & then
+        mockMvc.perform(
+                delete("/api/v1/boards/{id}", -1L)
+                    .content(objectMapper.writeValueAsString(request.toCommand(-1L)))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(400))
+            .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
+    }
+
+    @DisplayName("게시글을 삭제할 때 패스워드는 유효해야 한다.")
+    @Test
+    void deleteBoardWithInvalidPassword() throws Exception {
+        // given
+        BoardDeleteRequest request = BoardDeleteRequest.builder()
+            .password("12345")
+            .build();
+
+        doThrow(new IllegalArgumentException("비밀번호가 일치하지 않습니다."))
+            .when(boardService)
+            .deleteBoard(any(BoardDeleteCommand.class));
+
+        // when & then
+        mockMvc.perform(
+                delete("/api/v1/boards/{id}", -1L)
+                    .content(objectMapper.writeValueAsString(request.toCommand(1L)))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(400))
+            .andExpect(jsonPath("$.message").value("비밀번호가 일치하지 않습니다."));
+    }
+
+    @DisplayName("게시글을 삭제한다.")
+    @Test
+    void deleteBoard() throws Exception {
+        // given
+        BoardDeleteRequest request = BoardDeleteRequest.builder()
+            .password("1234")
+            .build();
+
+        // when & then
+        mockMvc.perform(
+                put("/api/v1/boards/{id}", 1L)
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("OK"));
     }
 }

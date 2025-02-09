@@ -20,7 +20,7 @@ public class BoardUpdateRequest {
     private String password;
 
     @Builder
-    public BoardUpdateRequest(String title, String content, String writer, String password) {
+    private BoardUpdateRequest(String title, String content, String writer, String password) {
         this.title = title;
         this.content = content;
         this.writer = writer;
