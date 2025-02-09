@@ -26,4 +26,11 @@ public class BoardService {
         Board savedBoard = boardRepository.save(createCommand.toEntity());
         return BoardResponse.of(savedBoard);
     }
+
+    public BoardResponse getBoardById(Long id) {
+        Board findBoard = boardRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        return BoardResponse.of(findBoard);
+    }
 }

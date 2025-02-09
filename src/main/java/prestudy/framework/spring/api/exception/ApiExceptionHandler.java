@@ -16,4 +16,12 @@ public class ApiExceptionHandler {
             e.getBindingResult().getAllErrors().getFirst().getDefaultMessage()
         );
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ApiResponse<Void> illegalArgumentException(IllegalArgumentException e) {
+        return ApiResponse.error(
+            HttpStatus.BAD_REQUEST,
+            e.getMessage()
+        );
+    }
 }

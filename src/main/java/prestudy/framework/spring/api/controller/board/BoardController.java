@@ -2,10 +2,7 @@ package prestudy.framework.spring.api.controller.board;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import prestudy.framework.spring.api.controller.board.request.BoardCreateRequest;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.controller.common.response.ApiResponse;
@@ -27,5 +24,10 @@ public class BoardController {
     @PostMapping("/api/v1/boards")
     public ApiResponse<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request) {
         return ApiResponse.success(boardService.createBoard(request.toCommand()));
+    }
+
+    @GetMapping("/api/v1/boards/{id}")
+    public ApiResponse<BoardResponse> getBoardById(@PathVariable("id") Long id) {
+        return ApiResponse.success(boardService.getBoardById(id));
     }
 }

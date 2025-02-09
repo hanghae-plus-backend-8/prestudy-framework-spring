@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -173,5 +174,50 @@ class BoardControllerTest extends ControllerTestSupport {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호는 필수 값 입니다."));
+    }
+
+    @DisplayName("게시글 ID로 게시글을 상세 조회한다.")
+    @Test
+    void getBoardById() throws Exception {
+        // given
+        BoardResponse response = BoardResponse.builder()
+            .id(1L)
+            .title("제목")
+            .content("내용")
+            .writer("작성자")
+            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
+            .build();
+
+        when(boardService.getBoardById(anyLong())).thenReturn(response);
+
+        // when & then
+        mockMvc.perform(
+                get("/api/v1/boards/{id}", 1L)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(200))
+            .andExpect(jsonPath("$.message").value("OK"))
+            .andExpect(jsonPath("$.data.id").value(1))
+            .andExpect(jsonPath("$.data.title").value("제목"))
+            .andExpect(jsonPath("$.data.content").value("내용"))
+            .andExpect(jsonPath("$.data.writer").value("작성자"))
+            .andExpect(jsonPath("$.data.createdDate").value("2025-02-07T12:00:00"));
+    }
+
+    @DisplayName("게시글 상세 조회 시 ID는 유효해야 한다.")
+    @Test
+    void getBoardByInvalidId() throws Exception {
+        // given
+        when(boardService.getBoardById(anyLong())).thenThrow(new IllegalArgumentException("존재하지 않는 게시글입니다."));
+
+        // when & then
+        mockMvc.perform(
+                get("/api/v1/boards/{id}", -1L)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.code").value(400))
+            .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
     }
 }

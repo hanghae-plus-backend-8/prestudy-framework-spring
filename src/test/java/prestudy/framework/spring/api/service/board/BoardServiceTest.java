@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
 class BoardServiceTest extends IntegrationTestSupport {
@@ -82,5 +83,52 @@ class BoardServiceTest extends IntegrationTestSupport {
         assertThat(response.getTitle()).isEqualTo("제목");
         assertThat(response.getContent()).isEqualTo("내용");
         assertThat(response.getWriter()).isEqualTo("홍길동");
+    }
+
+    @DisplayName("게시글 ID로 게시글을 상세 조회한다.")
+    @Test
+    void getBoardById() {
+        // given
+        Board board = Board.builder()
+            .title("제목")
+            .content("내용")
+            .writer("홍길동")
+            .password("<PASSWORD>")
+            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
+            .build();
+
+        Board savedBoard = boardRepository.save(board);
+
+        // when
+        BoardResponse response = boardService.getBoardById(savedBoard.getId());
+
+        // then
+        assertThat(response.getId()).isEqualTo(savedBoard.getId());
+        assertThat(response.getTitle()).isEqualTo("제목");
+        assertThat(response.getContent()).isEqualTo("내용");
+        assertThat(response.getWriter()).isEqualTo("홍길동");
+        assertThat(response.getCreatedDate()).isEqualTo(LocalDateTime.of(2025, 2, 7, 12, 0));
+    }
+
+    @DisplayName("게시글 상세 조회시 ID는 유효해야 한다.")
+    @Test
+    void getBoardByInvalidId() {
+        // given
+        Board board = Board.builder()
+            .title("제목")
+            .content("내용")
+            .writer("홍길동")
+            .password("<PASSWORD>")
+            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
+            .build();
+
+        Board savedBoard = boardRepository.save(board);
+
+        // when & then
+        long invalidId = savedBoard.getId() + 1;
+
+        assertThatThrownBy(() -> boardService.getBoardById(invalidId))
+            .hasMessage("존재하지 않는 게시글입니다.")
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }
