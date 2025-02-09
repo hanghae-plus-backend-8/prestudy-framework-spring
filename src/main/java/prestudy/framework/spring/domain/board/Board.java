@@ -38,4 +38,32 @@ public class Board {
         this.password = password;
         this.createdDate = createdDate;
     }
+
+    public boolean isInvalidPassword(String password) {
+        return !this.password.equals(password);
+    }
+
+    public void updateTitle(String title) {
+        if (title == null || title.isBlank()) {
+            return;
+        }
+
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        if (content == null || content.isBlank()) {
+            return;
+        }
+
+        this.content = content;
+    }
+
+    public void updateWriter(String writer) {
+        if (writer == null || writer.isBlank()) {
+            return;
+        }
+
+        this.writer = writer;
+    }
 }

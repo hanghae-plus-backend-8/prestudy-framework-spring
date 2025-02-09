@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.service.board.command.BoardCreateCommand;
+import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
 import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.board.BoardRepository;
 import prestudy.framework.spring.support.IntegrationTestSupport;
@@ -130,5 +131,92 @@ class BoardServiceTest extends IntegrationTestSupport {
         assertThatThrownBy(() -> boardService.getBoardById(invalidId))
             .hasMessage("존재하지 않는 게시글입니다.")
             .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("수정 시 ID는 유효해야 한다.")
+    @Test
+    void updateBoardWithInvalidId() {
+        // given
+        Board board = Board.builder()
+            .title("제목")
+            .content("내용")
+            .writer("홍길동")
+            .password("<PASSWORD>")
+            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
+            .build();
+
+        Board savedBoard = boardRepository.save(board);
+
+        // when & then
+        long invalidId = savedBoard.getId() + 1;
+
+        BoardUpdateCommand command = BoardUpdateCommand.builder()
+            .id(invalidId)
+            .title("제목")
+            .content("내용")
+            .password("<PASSWORD>")
+            .build();
+
+        assertThatThrownBy(() -> boardService.updateBoard(command))
+            .hasMessage("존재하지 않는 게시글입니다.")
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("수정 시 패스워드는 일치해야한다.")
+    @Test
+    void updateBoardWithInvalidPassword() {
+        // given
+        Board board = Board.builder()
+            .title("제목")
+            .content("내용")
+            .writer("홍길동")
+            .password("<PASSWORD>")
+            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
+            .build();
+
+        Board savedBoard = boardRepository.save(board);
+
+        // when & then
+        BoardUpdateCommand command = BoardUpdateCommand.builder()
+            .id(savedBoard.getId())
+            .title("제목")
+            .content("내용")
+            .password("<INVALID PASSWORD>")
+            .build();
+
+        assertThatThrownBy(() -> boardService.updateBoard(command))
+            .hasMessage("비밀번호가 일치하지 않습니다.")
+            .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("게시글을 수정한다.")
+    @Test
+    void updateBoard() {
+        // given
+        Board board = Board.builder()
+            .title("제목")
+            .content("내용")
+            .writer("홍길동")
+            .password("<PASSWORD>")
+            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
+            .build();
+
+        Board savedBoard = boardRepository.save(board);
+
+        // when
+        BoardUpdateCommand command = BoardUpdateCommand.builder()
+            .id(savedBoard.getId())
+            .title("제목 수정")
+            .content("내용 수정")
+            .writer("홍길순")
+            .password("<PASSWORD>")
+            .build();
+
+        BoardResponse response = boardService.updateBoard(command);
+
+        //then
+        assertThat(response.getTitle()).isEqualTo("제목 수정");
+        assertThat(response.getContent()).isEqualTo("내용 수정");
+        assertThat(response.getWriter()).isEqualTo("홍길순");
     }
 }

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import prestudy.framework.spring.api.controller.board.request.BoardCreateRequest;
+import prestudy.framework.spring.api.controller.board.request.BoardUpdateRequest;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.controller.common.response.ApiResponse;
 import prestudy.framework.spring.api.service.board.BoardService;
@@ -29,5 +30,11 @@ public class BoardController {
     @GetMapping("/api/v1/boards/{id}")
     public ApiResponse<BoardResponse> getBoardById(@PathVariable("id") Long id) {
         return ApiResponse.success(boardService.getBoardById(id));
+    }
+
+    @PutMapping("/api/v1/boards/{id}")
+    public ApiResponse<BoardResponse> updateBoard(@PathVariable("id") Long id,
+                                                  @Valid @RequestBody BoardUpdateRequest request) {
+        return ApiResponse.success(boardService.updateBoard(request.toCommand(id)));
     }
 }
