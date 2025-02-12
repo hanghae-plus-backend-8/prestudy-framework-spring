@@ -1,6 +1,7 @@
 package hanghaeboard.domain.board;
 
 
+import hanghaeboard.domain.BaseEntity;
 import hanghaeboard.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Board {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

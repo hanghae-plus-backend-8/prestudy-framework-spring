@@ -1,7 +1,6 @@
 package hanghaeboard.api.controller.board.request;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import hanghaeboard.api.service.board.request.CreateBoardServiceRequest;
+import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.member.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,8 +29,8 @@ public class CreateBoardRequest {
         this.content = content;
     }
 
-    public CreateBoardServiceRequest to(Member member) {
-        return CreateBoardServiceRequest.builder()
+    public Board toEntity(Member member) {
+        return Board.builder()
                 .member(member)
                 .title(title)
                 .content(content)

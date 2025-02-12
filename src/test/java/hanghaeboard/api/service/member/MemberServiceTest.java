@@ -1,5 +1,6 @@
 package hanghaeboard.api.service.member;
 
+import hanghaeboard.api.service.member.response.FindMember;
 import hanghaeboard.domain.member.Member;
 import hanghaeboard.domain.member.MemberRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -10,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class MemberServiceTest {
@@ -34,10 +34,10 @@ class MemberServiceTest {
         Member save = memberRepository.save(member);
         Long id = save.getId();
         // when
-        Member findMember = memberService.findMemberById(id);
+        FindMember findMember = memberService.findMemberById(id);
 
         // then
-        assertThat(findMember.getId()).isEqualTo(id);
+        assertThat(findMember.getMemberId()).isEqualTo(id);
         assertThat(findMember.getUsername()).isEqualTo("yeop");
     }
 
