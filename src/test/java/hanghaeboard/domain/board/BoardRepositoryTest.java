@@ -1,5 +1,6 @@
 package hanghaeboard.domain.board;
 
+import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.config.AuditingConfig;
 import hanghaeboard.domain.member.Member;
 import hanghaeboard.domain.member.MemberRepository;
@@ -81,5 +82,25 @@ class BoardRepositoryTest {
                         tuple("title3", "content3", "yeop"),
                         tuple("title2", "content2", "yeop"),
                         tuple("title1", "content1", "yeop"));
+    }
+
+    @DisplayName("생성 일자로 정렬된 게시물 목록을 조회할 수 있다.")
+    @Test
+    void findAllBoard() throws Exception {
+        // given
+        Member member = Member.builder().username("yeop").password("1234").build();
+        Member savedMember = memberRepository.save(member);
+        Board board1 = makeBoard(savedMember, "title1", "content1");
+        Thread.sleep(10);
+        Board board2 = makeBoard(savedMember, "title2", "content2");
+        Thread.sleep(10);
+        Board board3 = makeBoard(savedMember, "title3", "content3");
+
+        boardRepository.saveAll(List.of(board1, board2, board3));
+
+        // when
+        List<FindBoardResponse> allBoard = boardRepository.findAllBoard();
+
+        // then
     }
 }

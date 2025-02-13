@@ -30,4 +30,6 @@ public class BoardService {
         return CreateBoardResponse.from(savedBoard);
     }
 
+
+
 }
