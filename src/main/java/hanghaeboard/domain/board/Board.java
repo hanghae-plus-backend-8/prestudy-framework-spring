@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,10 +30,11 @@ public class Board extends BaseEntity {
     private String content;
 
     @Builder
-    private Board(Long id, Member member, String title, String content) {
+    private Board(Long id, Member member, String title, String content, LocalDateTime createdDatetime) {
         this.id = id;
         this.member = member;
         this.title = title;
         this.content = content;
+
     }
 }
