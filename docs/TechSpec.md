@@ -9,7 +9,7 @@
 3. 계획 (Plan)
 	+ 방법론 적용 : TDD, 클린 아키텍처
 	+ 기술 스택 : Spring Boot, JPA, AWS, Github Actions
-	+ 문서화 : UseCase / ERD / Spring Rest Docs
+	+ 문서화 : UseCase / ERD / API 명세서 / API Swagger
 	+ 멀티 모듈을 고려한 패키지 구조 설계 - 레이어 계층 (MVC 패턴)  
 	  코어 모듈에서 사용하는 엔티티와 Repository Layer를 같은 domain 패키지에 구현하며, API는 따로 패키지를 분리한다.  
 	  API 패키지 내에서는 Controller Layer와 Service Layer로 나뉘며 Request DTO또한 분리한다.   
