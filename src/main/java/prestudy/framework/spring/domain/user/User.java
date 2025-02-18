@@ -67,4 +67,8 @@ public class User {
     public static User of(String username, String password) {
         return new User(username, password);
     }
+
+    public boolean isNotEqualPassword(String password) {
+        return !this.password.equals(password);
+    }
 }
