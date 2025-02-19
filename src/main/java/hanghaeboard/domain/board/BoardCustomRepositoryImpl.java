@@ -1,7 +1,10 @@
 package hanghaeboard.domain.board;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
+import hanghaeboard.api.service.member.response.FindMember;
+import hanghaeboard.domain.member.QMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -15,13 +18,15 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
 
     @Override
     public List<FindBoardResponse> findAllBoard() {
-        return null;
-//        QBoard board = QBoard.board;
-//        QMember member = QMember.member;
-//
-//        return queryFactory.select(new FindBoardResponse(board.id, member.id, board.title, board.content, board.createdDatetime, board.lastModifiedDatetime))
-//                .from(board)
-//                .join(member)
-//                .orderBy(board.createdDatetime.desc()).fetch();
+        QBoard board = QBoard.board;
+        QMember member = QMember.member;
+
+        return queryFactory.select(
+                Projections.constructor(FindBoardResponse.class, board.id
+                        , Projections.constructor(FindMember.class, member.id, member.username)
+                        , board.title, board.content, board.createdDatetime, board.lastModifiedDatetime))
+                .from(board)
+                .join(board.member, member)
+                .orderBy(board.createdDatetime.desc()).fetch();
     }
 }

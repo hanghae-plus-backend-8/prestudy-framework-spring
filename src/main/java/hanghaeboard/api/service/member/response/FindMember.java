@@ -13,14 +13,12 @@ public class FindMember {
     private String username;
 
     @Builder
-    private FindMember(Long memberId, String username) {
+    public FindMember(Long memberId, String username) {
         this.memberId = memberId;
         this.username = username;
     }
 
     public static FindMember of(Member member) {
-        return FindMember.builder()
-                .memberId(member.getId())
-                .username(member.getUsername()).build();
+        return new FindMember(member.getId(), member.getUsername());
     }
 }

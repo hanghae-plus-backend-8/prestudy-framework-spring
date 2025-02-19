@@ -1,6 +1,7 @@
 package hanghaeboard.api.service.board;
 
 import hanghaeboard.api.controller.board.request.CreateBoardRequest;
+import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.board.BoardRepository;
 import hanghaeboard.domain.member.Member;
@@ -77,6 +78,47 @@ class BoardServiceTest {
                 ()-> boardService.createBoard(request))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("조회된 회원이 없습니다.");
+    }
+
+    @DisplayName("전체 게시물을 내림차순 정렬된 상태로 조회할 수 있다.")
+    @Test
+    void findAllBoard() {
+        // given
+        Member member = Member.builder().username("yeop").password("1234").build();
+        memberRepository.save(member);
+
+        Board board = makeBoard(member, "title1", "content1");
+        boardRepository.saveAll(List.of(
+                makeBoard(member, "title1", "content1")
+                , makeBoard(member, "title2", "content2")
+                , makeBoard(member, "title3", "content3")));
+        // when
+        List<FindBoardResponse> allBoard = boardService.findAllBoard();
+
+        // then
+        assertThat(allBoard).extracting("findMember.username", "title", "content")
+                .containsExactly(
+                        tuple("yeop", "title3", "content3")
+                        , tuple("yeop", "title2", "content2")
+                        , tuple("yeop", "title1", "content1"));
+    }
+
+
+    @DisplayName("전체 게시물을 조회할 대 게시물이 없는 경우 빈 리스트가 조회된다.")
+    @Test
+    void findAllBoardByEmpty() {
+        // given
+        Member member = Member.builder().username("yeop").password("1234").build();
+        memberRepository.save(member);
+        // when
+        List<FindBoardResponse> allBoard = boardService.findAllBoard();
+
+        // then
+        assertThat(allBoard).isEmpty();
+    }
+
+    private static Board makeBoard(Member member, String title, String content) {
+        return Board.builder().title(title).content(content).member(member).build();
     }
 
 }

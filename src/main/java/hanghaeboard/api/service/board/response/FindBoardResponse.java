@@ -1,5 +1,7 @@
 package hanghaeboard.api.service.board.response;
 
+import hanghaeboard.api.service.member.response.FindMember;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,16 +11,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class FindBoardResponse {
 
-    private Long boardId;
-    private Long memberId;
+    private Long id;
+    private FindMember findMember;
     private String title;
     private String content;
     private LocalDateTime createdDatetime;
     private LocalDateTime lastModifiedDatetime;
 
-    public FindBoardResponse(Long boardId, Long memberId, String title, String content, LocalDateTime createdDatetime, LocalDateTime lastModifiedDatetime) {
-        this.boardId = boardId;
-        this.memberId = memberId;
+    @Builder
+    public FindBoardResponse(Long id, FindMember findMember, String title, String content, LocalDateTime createdDatetime, LocalDateTime lastModifiedDatetime) {
+        this.id = id;
+        this.findMember = findMember;
         this.title = title;
         this.content = content;
         this.createdDatetime = createdDatetime;

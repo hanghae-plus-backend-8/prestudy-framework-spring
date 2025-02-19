@@ -8,7 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -17,7 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-@DataJpaTest
+@SpringBootTest
 @ActiveProfiles("test")
 @Import(AuditingConfig.class)
 class BoardRepositoryTest {
@@ -42,7 +42,6 @@ class BoardRepositoryTest {
         Member savedMember = memberRepository.save(member);
         Board board = makeBoard(savedMember, "hi", "hihihi");
 
-
         // when
         boardRepository.save(board);
 
@@ -59,7 +58,7 @@ class BoardRepositoryTest {
         return Board.builder().member(member).title(title).content(content).build();
     }
 
-    @DisplayName("생성 일자로 정렬된 게시물 목록을 조회할 수 있다.")
+    @DisplayName("생성 일자로 내림차순 정렬된 게시물 목록을 조회할 수 있다.")
     @Test
     void findBoardList() throws Exception{
         // given
@@ -84,7 +83,7 @@ class BoardRepositoryTest {
                         tuple("title1", "content1", "yeop"));
     }
 
-    @DisplayName("생성 일자로 정렬된 게시물 목록을 조회할 수 있다.")
+    @DisplayName("생성 일자로 내림차순 정렬된 게시물 목록을 조회할 수 있다.")
     @Test
     void findAllBoard() throws Exception {
         // given
@@ -102,5 +101,11 @@ class BoardRepositoryTest {
         List<FindBoardResponse> allBoard = boardRepository.findAllBoard();
 
         // then
+        assertThat(allBoard).extracting("id", "findMember.username", "title", "content")
+                .containsExactly(
+                        tuple(3L, "yeop", "title3", "content3")
+                        , tuple(2L, "yeop", "title2", "content2")
+                        , tuple(1L, "yeop", "title1", "content1")
+                );
     }
 }
