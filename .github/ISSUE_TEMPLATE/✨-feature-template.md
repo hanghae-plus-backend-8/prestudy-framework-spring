@@ -1,9 +1,9 @@
 ---
 name: "✨ FEATURE TEMPLATE"
 about: 기능 이슈 템플릿
-title: "[FEATURE]"
+title: "[N주차 - 이름] 이슈제목"
 labels: "✨Feature"
-assignees: discphy
+assignees: ''
 
 ---
 
