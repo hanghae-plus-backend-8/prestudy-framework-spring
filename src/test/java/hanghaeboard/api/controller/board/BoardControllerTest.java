@@ -50,7 +50,7 @@ class BoardControllerTest {
                 .build();
 
         // when // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/board/create")
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/boards")
                 .content(objectMapper.writeValueAsString(request))
                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -72,7 +72,7 @@ class BoardControllerTest {
         when(boardService.findAllBoard()).thenReturn(List.of(response));
 
         // when // then
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/board/boards"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/boards"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value("200"))
                 .andExpect(jsonPath("$.message").value("OK"))

@@ -22,12 +22,12 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/api/v1/board/boards")
+    @GetMapping("/api/v1/boards")
     public ApiResponse<List<FindBoardResponse>> getBoards(){
         return ApiResponse.ok(boardService.findAllBoard());
     }
 
-    @PostMapping("/api/v1/board/create")
+    @PostMapping("/api/v1/boards")
     public ApiResponse<CreateBoardResponse> createBoard(@Valid @RequestBody CreateBoardRequest request) throws Exception{
         log.info("createBoard request: {}", request);
 

@@ -1,5 +1,5 @@
 ### 게시물 생성
-GET localhost:8080/api/v1/board/boards
+GET localhost:8080/api/v1/boards
 Content-Type: application/json
 
 {
