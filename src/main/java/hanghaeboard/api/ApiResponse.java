@@ -24,6 +24,10 @@ public class ApiResponse<T> {
         return new ApiResponse<>(status.value(), status, message, data);
     }
 
+    public static <T> ApiResponse<T> of(HttpStatus status, String message) {
+        return ApiResponse.of(status, message, null);
+    }
+
     public static <T> ApiResponse<T> of(HttpStatus status, T data) {
         return ApiResponse.of(status, status.name(), data);
     }
