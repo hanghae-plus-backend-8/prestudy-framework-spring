@@ -2,7 +2,6 @@ package hanghaeboard.domain.board;
 
 
 import hanghaeboard.domain.BaseEntity;
-import hanghaeboard.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,20 +20,20 @@ public class Board extends BaseEntity {
     @Column(name = "board_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private String writer;
+
+    private String password;
 
     private String title;
 
     private String content;
 
     @Builder
-    private Board(Long id, Member member, String title, String content, LocalDateTime createdDatetime) {
+    private Board(Long id, String writer, String password, String title, String content, LocalDateTime createdDatetime) {
         this.id = id;
-        this.member = member;
+        this.writer = writer;
+        this.password = password;
         this.title = title;
         this.content = content;
-
     }
 }

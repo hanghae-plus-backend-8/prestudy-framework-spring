@@ -4,7 +4,6 @@ import hanghaeboard.api.controller.board.request.CreateBoardRequest;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.board.BoardRepository;
-import hanghaeboard.domain.member.Member;
 import hanghaeboard.domain.member.MemberRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -16,7 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -42,11 +42,10 @@ class BoardServiceTest {
     @Test
     void createBoard() {
         // given
-        Member member = Member.builder().username("yeop").password("1234").build();
-        memberRepository.save(member);
 
         CreateBoardRequest request = CreateBoardRequest.builder()
-                .memberId(member.getId())
+                .writer("yeop")
+                .password("1234")
                 .title("title")
                 .content("content")
                 .build();
@@ -57,68 +56,46 @@ class BoardServiceTest {
         // then
         List<Board> all = boardRepository.findAll();
         assertThat(all).hasSize(1);
-        assertThat(all).extracting("title", "content")
-                .containsExactlyInAnyOrder(tuple("title", "content"));
-        assertThat(all.get(0).getMember().getUsername()).isEqualTo("yeop");
+        assertThat(all).extracting("writer", "password", "title", "content")
+                .containsExactlyInAnyOrder(tuple("yeop", "1234", "title", "content"));
+
     }
 
-    @DisplayName("게시물을 생성할 때 회원 정보가 정확하지 않은 경우 게시물을 생성할 수 없다.")
+    @DisplayName("전체 게시물을 생성일자 내림차순으로 조회할 수 있다.")
     @Test
-    void createBoardWithoutMember() {
+    void findAllBoard() throws Exception{
         // given
+        boardRepository.save(makeBoard("yeop", "1234", "title1", "content1"));
+        Thread.sleep(10);
+        boardRepository.save(makeBoard("yeop", "1234", "title2", "content2"));
+        Thread.sleep(10);
+        boardRepository.save(makeBoard("yeop", "1234", "title3", "content3"));
+        Thread.sleep(10);
 
-        CreateBoardRequest request = CreateBoardRequest.builder()
-                .memberId(1L)
-                .title("title")
-                .content("content")
-                .build();
-
-        // when // then
-        assertThatThrownBy(
-                ()-> boardService.createBoard(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("조회된 회원이 없습니다.");
-    }
-
-    @DisplayName("전체 게시물을 내림차순 정렬된 상태로 조회할 수 있다.")
-    @Test
-    void findAllBoard() {
-        // given
-        Member member = Member.builder().username("yeop").password("1234").build();
-        memberRepository.save(member);
-
-        Board board = makeBoard(member, "title1", "content1");
-        boardRepository.saveAll(List.of(
-                makeBoard(member, "title1", "content1")
-                , makeBoard(member, "title2", "content2")
-                , makeBoard(member, "title3", "content3")));
         // when
-        List<FindBoardResponse> allBoard = boardService.findAllBoard();
+        List<FindBoardResponse> allBoard = boardRepository.findAllBoard();
 
         // then
-        assertThat(allBoard).extracting("findMember.username", "title", "content")
+        assertThat(allBoard).extracting("writer", "title", "content")
                 .containsExactly(
                         tuple("yeop", "title3", "content3")
                         , tuple("yeop", "title2", "content2")
                         , tuple("yeop", "title1", "content1"));
     }
 
-
     @DisplayName("전체 게시물을 조회할 대 게시물이 없는 경우 빈 리스트가 조회된다.")
     @Test
     void findAllBoardByEmpty() {
-        // given
-        Member member = Member.builder().username("yeop").password("1234").build();
-        memberRepository.save(member);
-        // when
+
+        // given // when
         List<FindBoardResponse> allBoard = boardService.findAllBoard();
 
         // then
         assertThat(allBoard).isEmpty();
     }
 
-    private static Board makeBoard(Member member, String title, String content) {
-        return Board.builder().title(title).content(content).member(member).build();
+    private static Board makeBoard(String writer, String password, String title, String content) {
+        return Board.builder().title(title).content(content).writer(writer).password(password).build();
     }
 
 }

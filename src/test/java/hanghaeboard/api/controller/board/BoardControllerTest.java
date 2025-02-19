@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghaeboard.api.controller.board.request.CreateBoardRequest;
 import hanghaeboard.api.service.board.BoardService;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
-import hanghaeboard.api.service.member.response.FindMember;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +43,8 @@ class BoardControllerTest {
     void createBoard() throws Exception{
         // given
         CreateBoardRequest request = CreateBoardRequest.builder()
-                .memberId(1L)
+                .writer("yeop")
+                .password("1234")
                 .title("title")
                 .content("content")
                 .build();
@@ -64,9 +64,9 @@ class BoardControllerTest {
         // given
         FindBoardResponse response = FindBoardResponse.builder()
                 .id(1L)
+                .writer("yeop")
                 .title("title")
                 .content("content")
-                .findMember(FindMember.builder().memberId(1L).username("yeop").build())
                 .build();
 
         when(boardService.findAllBoard()).thenReturn(List.of(response));
@@ -78,11 +78,8 @@ class BoardControllerTest {
                 .andExpect(jsonPath("$.message").value("OK"))
                 .andExpect(jsonPath("$.data").isArray())
                 .andExpect(jsonPath("$.data[*].id").value(1))
+                .andExpect(jsonPath("$.data[*].writer").value("yeop"))
                 .andExpect(jsonPath("$.data[*].title").value("title"))
-                .andExpect(jsonPath("$.data[*].content").value("content"))
-                .andExpect(jsonPath("$.data[*].findMember.memberId").value(1))
-                .andExpect(jsonPath("$.data[*].findMember.username").value("yeop"))
-                ;
-
+                .andExpect(jsonPath("$.data[*].content").value("content"));
     }
 }

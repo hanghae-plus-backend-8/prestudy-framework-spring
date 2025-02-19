@@ -34,13 +34,11 @@ class BoardRepositoryTest {
         memberRepository.deleteAllInBatch();
     }
 
-    @DisplayName("게시판을 생성할 수 있다.")
+    @DisplayName("게시물을 생성할 수 있다.")
     @Test
     void createBoard() {
         // given
-        Member member = Member.builder().username("yeop").password("1234").build();
-        Member savedMember = memberRepository.save(member);
-        Board board = makeBoard(savedMember, "hi", "hihihi");
+        Board board = makeBoard("yeop", "1234", "hi", "hihihi");
 
         // when
         boardRepository.save(board);
@@ -49,38 +47,8 @@ class BoardRepositoryTest {
         List<Board> all = boardRepository.findAll();
         assertThat(all).hasSize(1);
         assertThat(all)
-                .extracting("title", "content")
-                .containsExactlyInAnyOrder(tuple("hi", "hihihi"));
-        assertThat(all.get(0).getMember().getUsername()).isEqualTo("yeop");
-    }
-
-    private static Board makeBoard(Member member, String title, String content) {
-        return Board.builder().member(member).title(title).content(content).build();
-    }
-
-    @DisplayName("생성 일자로 내림차순 정렬된 게시물 목록을 조회할 수 있다.")
-    @Test
-    void findBoardList() throws Exception{
-        // given
-        Member member = Member.builder().username("yeop").password("1234").build();
-        Member savedMember = memberRepository.save(member);
-        Board board1 = makeBoard(savedMember, "title1", "content1");
-        Thread.sleep(10);
-        Board board2 = makeBoard(savedMember, "title2", "content2");
-        Thread.sleep(10);
-        Board board3 = makeBoard(savedMember, "title3", "content3");
-
-        boardRepository.saveAll(List.of(board1, board2, board3));
-        
-        // when
-        List<Board> allWithMember = boardRepository.findAllWithMember();
-
-        // then
-        assertThat(allWithMember).extracting("title", "content","member.username")
-                .containsExactly(
-                        tuple("title3", "content3", "yeop"),
-                        tuple("title2", "content2", "yeop"),
-                        tuple("title1", "content1", "yeop"));
+                .extracting("writer", "password", "title", "content")
+                .containsExactlyInAnyOrder(tuple("yeop", "1234","hi", "hihihi"));
     }
 
     @DisplayName("생성 일자로 내림차순 정렬된 게시물 목록을 조회할 수 있다.")
@@ -89,11 +57,11 @@ class BoardRepositoryTest {
         // given
         Member member = Member.builder().username("yeop").password("1234").build();
         Member savedMember = memberRepository.save(member);
-        Board board1 = makeBoard(savedMember, "title1", "content1");
+        Board board1 = makeBoard("yeop", "1234", "title1", "content1");
         Thread.sleep(10);
-        Board board2 = makeBoard(savedMember, "title2", "content2");
+        Board board2 = makeBoard("yeop", "1234", "title2", "content2");
         Thread.sleep(10);
-        Board board3 = makeBoard(savedMember, "title3", "content3");
+        Board board3 = makeBoard("yeop", "1234", "title3", "content3");
 
         boardRepository.saveAll(List.of(board1, board2, board3));
 
@@ -101,11 +69,15 @@ class BoardRepositoryTest {
         List<FindBoardResponse> allBoard = boardRepository.findAllBoard();
 
         // then
-        assertThat(allBoard).extracting("id", "findMember.username", "title", "content")
+        assertThat(allBoard).extracting("id", "writer", "title", "content")
                 .containsExactly(
                         tuple(3L, "yeop", "title3", "content3")
                         , tuple(2L, "yeop", "title2", "content2")
                         , tuple(1L, "yeop", "title1", "content1")
                 );
+    }
+
+    private static Board makeBoard(String writer, String password, String title, String content) {
+        return Board.builder().writer(writer).password(password).title(title).content(content).build();
     }
 }
