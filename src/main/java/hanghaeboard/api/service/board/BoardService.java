@@ -6,6 +6,7 @@ import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.board.BoardRepository;
 import hanghaeboard.domain.member.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,10 @@ public class BoardService {
 
     public List<FindBoardResponse> findAllBoard(){
         return boardRepository.findAllBoard();
+    }
+
+    public FindBoardResponse findBoardById(Long id){
+        return FindBoardResponse.from(boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("게시물을 조회할 수 없습니다.")));
     }
 
 }

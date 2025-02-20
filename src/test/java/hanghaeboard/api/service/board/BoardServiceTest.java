@@ -5,6 +5,7 @@ import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.board.BoardRepository;
 import hanghaeboard.domain.member.MemberRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -92,6 +92,32 @@ class BoardServiceTest {
 
         // then
         assertThat(allBoard).isEmpty();
+    }
+
+    @DisplayName("id로 게시물을 조회할 수 있다.")
+    @Test
+    void findBoardById() {
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title2", "content2"));
+        Long id = saved.getId();
+        // when
+        FindBoardResponse boardById = boardService.findBoardById(id);
+
+        // then
+        assertThat(boardById).isNotNull();
+        assertThat(boardById.getWriter()).isEqualTo("yeop");
+        assertThat(boardById.getTitle()).isEqualTo("title2");
+        assertThat(boardById.getContent()).isEqualTo("content2");
+    }
+
+    @DisplayName("id로 조회할 수 있는 게시물이 없는 경우 조회되지 않는다.")
+    @Test
+    void findBoardById_notFound() {
+        // given
+        Long id = 1L;
+
+        // when // then
+        assertThatThrownBy(() -> boardService.findBoardById(id)).isInstanceOf(EntityNotFoundException.class).hasMessage("게시물을 조회할 수 없습니다.");
     }
 
     private static Board makeBoard(String writer, String password, String title, String content) {

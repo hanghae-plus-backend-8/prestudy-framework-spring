@@ -2,8 +2,6 @@ package hanghaeboard.domain.board;
 
 import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.config.AuditingConfig;
-import hanghaeboard.domain.member.Member;
-import hanghaeboard.domain.member.MemberRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,15 +21,11 @@ import static org.assertj.core.api.Assertions.tuple;
 class BoardRepositoryTest {
 
     @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private BoardRepository boardRepository;
 
     @AfterEach
     void tearDown() {
         boardRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
     }
 
     @DisplayName("게시물을 생성할 수 있다.")
@@ -55,8 +49,6 @@ class BoardRepositoryTest {
     @Test
     void findAllBoard() throws Exception {
         // given
-        Member member = Member.builder().username("yeop").password("1234").build();
-        Member savedMember = memberRepository.save(member);
         Board board1 = makeBoard("yeop", "1234", "title1", "content1");
         Thread.sleep(10);
         Board board2 = makeBoard("yeop", "1234", "title2", "content2");
@@ -75,6 +67,22 @@ class BoardRepositoryTest {
                         , tuple(2L, "yeop", "title2", "content2")
                         , tuple(1L, "yeop", "title1", "content1")
                 );
+    }
+
+    @DisplayName("게시물을 id로 조회할 수 있다.")
+    @Test
+    void findBoardById() {
+        // given
+        Board board = makeBoard("yeop", "1234", "title1", "content1");
+        Board save = boardRepository.save(board);
+        Long id = save.getId();
+
+        // when
+        Board findById = boardRepository.findById(id).get();
+
+        // then
+        assertThat(findById.getId()).isEqualTo(id);
+        assertThat(findById.getTitle()).isEqualTo("title1");
     }
 
     private static Board makeBoard(String writer, String password, String title, String content) {

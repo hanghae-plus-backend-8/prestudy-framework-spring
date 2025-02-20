@@ -1,6 +1,7 @@
 package hanghaeboard.api.exception;
 
 import hanghaeboard.api.ApiResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
@@ -27,6 +28,18 @@ public class ApiControllerAdvice {
         ObjectError objectError = e.getAllErrors().get(0);
 
         return ApiResponse.of(HttpStatus.BAD_REQUEST, objectError.getDefaultMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ApiResponse<Object> entityNotFoundExceptions(EntityNotFoundException e) {
+        return ApiResponse.of(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public ApiResponse<Object> exception(Exception e){
+        return ApiResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버에 예상치 못한 오류가 발생했습니다.");
     }
 
 }

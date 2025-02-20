@@ -5,6 +5,7 @@ import hanghaeboard.api.controller.board.request.CreateBoardRequest;
 import hanghaeboard.api.service.board.BoardService;
 import hanghaeboard.api.service.board.response.CreateBoardResponse;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,5 +183,48 @@ class BoardControllerTest {
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value("내용은 필수 입력입니다."))
         ;
+    }
+
+    @DisplayName("id로 게시물을 조회할 수 있다.")
+    @Test
+    void findBoardById() throws Exception{
+        // given
+        FindBoardResponse response = FindBoardResponse.builder()
+                .id(1L)
+                .writer("yeop")
+                .title("title")
+                .content("content")
+                .build();
+
+        when(boardService.findBoardById(any())).thenReturn(response);
+
+        // when // then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/boards/1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("OK"))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.writer").value("yeop"))
+                .andExpect(jsonPath("$.data.title").value("title"))
+                .andExpect(jsonPath("$.data.content").value("content"));
+    }
+
+    @DisplayName("id로 게시물을 조회할 수 없는 경우 오류가 발생한다.")
+    @Test
+    void findBoardById2() throws Exception{
+        // given
+
+        when(boardService.findBoardById(any())).thenThrow(new EntityNotFoundException("게시물을 조회할 수 없습니다."));
+
+        // when // then
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/boards/1"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("게시물을 조회할 수 없습니다."))
+                .andExpect(jsonPath("$.data").isEmpty())
+                ;
     }
 }

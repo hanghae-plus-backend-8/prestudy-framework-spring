@@ -8,10 +8,7 @@ import hanghaeboard.api.service.board.response.FindBoardResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,6 +29,11 @@ public class BoardController {
         log.info("createBoard request: {}", request);
 
         return ApiResponse.ok(boardService.createBoard(request));
+    }
+
+    @GetMapping("/api/v1/boards/{id}")
+    public ApiResponse<FindBoardResponse> findBoardById(@PathVariable Long id) throws Exception{
+        return ApiResponse.ok(boardService.findBoardById(id));
     }
 
 

@@ -1,5 +1,6 @@
 package hanghaeboard.api.service.board.response;
 
+import hanghaeboard.domain.board.Board;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,5 +26,16 @@ public class FindBoardResponse {
         this.content = content;
         this.createdDatetime = createdDatetime;
         this.lastModifiedDatetime = lastModifiedDatetime;
+    }
+
+    public static FindBoardResponse from(Board board) {
+        return FindBoardResponse.builder()
+                .id(board.getId())
+                .writer(board.getWriter())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .createdDatetime(board.getCreatedDatetime())
+                .lastModifiedDatetime(board.getLastModifiedDatetime())
+                .build();
     }
 }
