@@ -1,10 +1,12 @@
 package hanghaeboard.api.service.board;
 
 import hanghaeboard.api.controller.board.request.CreateBoardRequest;
+import hanghaeboard.api.controller.board.request.UpdateBoardRequest;
+import hanghaeboard.api.exception.exception.InvalidPasswordException;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
+import hanghaeboard.api.service.board.response.UpdateBoardResponse;
 import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.board.BoardRepository;
-import hanghaeboard.domain.member.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
@@ -29,13 +31,9 @@ class BoardServiceTest {
     @Autowired
     private BoardRepository boardRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
-
     @AfterEach
     void tearDown() {
         boardRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
     }
 
     @DisplayName("게시물을 생성할 수 있다.")
@@ -117,11 +115,71 @@ class BoardServiceTest {
         Long id = 1L;
 
         // when // then
-        assertThatThrownBy(() -> boardService.findBoardById(id)).isInstanceOf(EntityNotFoundException.class).hasMessage("게시물을 조회할 수 없습니다.");
+        assertThatThrownBy(() -> boardService.findBoardById(id)).isInstanceOf(EntityNotFoundException.class).hasMessage("조회된 게시물이 없습니다.");
     }
 
     private static Board makeBoard(String writer, String password, String title, String content) {
         return Board.builder().title(title).content(content).writer(writer).password(password).build();
+    }
+
+    @DisplayName("게시물을 수정할 수 있다.")
+    @Test
+    void modifyBoard() {
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title", "content"));
+        Long id = saved.getId();
+        UpdateBoardRequest request = UpdateBoardRequest.builder()
+                .password("1234")
+                .writer("yeop1")
+                .title("changeTitle")
+                .content("changeContent")
+                .build();
+
+        // when
+        UpdateBoardResponse updateBoardResponse = boardService.updateBoard(id, request);
+
+        // then
+        assertThat(updateBoardResponse).isNotNull();
+        assertThat(updateBoardResponse.getWriter()).isEqualTo("yeop1");
+        assertThat(updateBoardResponse.getTitle()).isEqualTo("changeTitle");
+        assertThat(updateBoardResponse.getContent()).isEqualTo("changeContent");
+    }
+
+    @DisplayName("게시물을 수정할 때 해당 게시물이 없는 경우 수정할 수 없다.")
+    @Test
+    void modityBoard_notFoundBoard() {
+        // given
+        UpdateBoardRequest request = UpdateBoardRequest.builder()
+                .password("1234")
+                .writer("yeop1")
+                .title("changeTitle")
+                .content("changeContent")
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> boardService.updateBoard(1L, request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("조회된 게시물이 없습니다.");
+    }
+
+    @DisplayName("게시물을 수정할 때 비밀번호가 다른 경우 수정할 수 없다.")
+    @Test
+    void modifyBoard_isNotCorrectPassword() {
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title", "content"));
+        Long id = saved.getId();
+        UpdateBoardRequest request = UpdateBoardRequest.builder()
+                .password("notPassword")
+                .writer("yeop1")
+                .title("changeTitle")
+                .content("changeContent")
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> boardService.updateBoard(id, request))
+                .isInstanceOf(InvalidPasswordException.class)
+                .hasMessage("비밀번호가 올바르지 않습니다.");
+
     }
 
 }

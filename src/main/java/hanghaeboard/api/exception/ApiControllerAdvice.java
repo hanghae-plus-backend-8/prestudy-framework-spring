@@ -1,6 +1,7 @@
 package hanghaeboard.api.exception;
 
 import hanghaeboard.api.ApiResponse;
+import hanghaeboard.api.exception.exception.InvalidPasswordException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
@@ -34,6 +35,12 @@ public class ApiControllerAdvice {
     @ExceptionHandler(EntityNotFoundException.class)
     public ApiResponse<Object> entityNotFoundExceptions(EntityNotFoundException e) {
         return ApiResponse.of(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ApiResponse<Object> invalidPasswordExceptions(InvalidPasswordException e) {
+        return ApiResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

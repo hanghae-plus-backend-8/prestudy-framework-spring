@@ -28,6 +28,16 @@ public class Board extends BaseEntity {
 
     private String content;
 
+    public void changeBoard(String writer, String title, String content){
+        this.writer = writer;
+        this.title = title;
+        this.content = content;
+    }
+
+    public boolean isCorrectPassword(String password){
+        return this.password.equals(password);
+    }
+
     @Builder
     private Board(Long id, String writer, String password, String title, String content, LocalDateTime createdDatetime) {
         this.id = id;

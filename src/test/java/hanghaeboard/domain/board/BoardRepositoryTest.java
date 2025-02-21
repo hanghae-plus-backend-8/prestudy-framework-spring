@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ import static org.assertj.core.api.Assertions.tuple;
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(AuditingConfig.class)
+@Transactional
 class BoardRepositoryTest {
 
     @Autowired
@@ -61,11 +63,11 @@ class BoardRepositoryTest {
         List<FindBoardResponse> allBoard = boardRepository.findAllBoard();
 
         // then
-        assertThat(allBoard).extracting("id", "writer", "title", "content")
+        assertThat(allBoard).extracting("writer", "title", "content")
                 .containsExactly(
-                        tuple(3L, "yeop", "title3", "content3")
-                        , tuple(2L, "yeop", "title2", "content2")
-                        , tuple(1L, "yeop", "title1", "content1")
+                        tuple("yeop", "title3", "content3")
+                        , tuple( "yeop", "title2", "content2")
+                        , tuple( "yeop", "title1", "content1")
                 );
     }
 
@@ -78,11 +80,28 @@ class BoardRepositoryTest {
         Long id = save.getId();
 
         // when
-        Board findById = boardRepository.findById(id).get();
+        Board findById = boardRepository.findById(id).orElseThrow();
 
         // then
         assertThat(findById.getId()).isEqualTo(id);
         assertThat(findById.getTitle()).isEqualTo("title1");
+    }
+
+    @DisplayName("게시물을 수정할 수 있다.")
+    @Test
+    void modifyBoard() {
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title1", "content1"));
+
+        // when
+        Board board = boardRepository.findById(saved.getId()).orElseThrow();
+        board.changeBoard("yeop1", "changeTitle", "changeContent");
+
+        // then
+        Board updatedBoard = boardRepository.findById(board.getId()).orElseThrow();
+        assertThat(updatedBoard.getWriter()).isEqualTo("yeop1");
+        assertThat(updatedBoard.getTitle()).isEqualTo("changeTitle");
+        assertThat(updatedBoard.getContent()).isEqualTo("changeContent");
     }
 
     private static Board makeBoard(String writer, String password, String title, String content) {
