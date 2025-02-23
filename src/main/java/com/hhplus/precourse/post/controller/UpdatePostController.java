@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 public class UpdatePostController {
@@ -54,14 +56,18 @@ public class UpdatePostController {
         long id,
         String title,
         String author,
-        String content
+        String content,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
     ) {
         public static UpdatePostController.Response from(PostVo postVo) {
             return new UpdatePostController.Response(
                 postVo.id(),
                 postVo.title(),
                 postVo.author(),
-                postVo.content()
+                postVo.content(),
+                postVo.createdAt(),
+                postVo.updatedAt()
             );
         }
     }

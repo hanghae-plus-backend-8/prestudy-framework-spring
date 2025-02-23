@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 public class CreatePostController {
@@ -48,14 +50,18 @@ public class CreatePostController {
         long id,
         String title,
         String author,
-        String content
+        String content,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
     ) {
         public static Response from(PostVo postVo) {
             return new Response(
                 postVo.id(),
                 postVo.title(),
                 postVo.author(),
-                postVo.content()
+                postVo.content(),
+                postVo.createdAt(),
+                postVo.updatedAt()
             );
         }
     }

@@ -10,6 +10,8 @@ import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDateTime;
+
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.hhplus.precourse.common.ApiDocumentUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +39,9 @@ class GetPostControllerTest extends ControllerTestContext {
                 "작성자명",
                 "제목",
                 "내용",
-                "비밀번호"
+                "비밀번호",
+                LocalDateTime.now(),
+                LocalDateTime.now()
             ));
 
         given()
@@ -59,7 +63,9 @@ class GetPostControllerTest extends ControllerTestContext {
                             fieldWithPath("data.id").type(NUMBER).description("게시글 ID"),
                             fieldWithPath("data.title").type(STRING).description("제목"),
                             fieldWithPath("data.author").type(STRING).description("작성자명"),
-                            fieldWithPath("data.content").type(STRING).description("내용")
+                            fieldWithPath("data.content").type(STRING).description("내용"),
+                            fieldWithPath("data.createdAt").type(STRING).description("생성일시"),
+                            fieldWithPath("data.updatedAt").type(STRING).description("수정일시")
                         )
                     )
                 )

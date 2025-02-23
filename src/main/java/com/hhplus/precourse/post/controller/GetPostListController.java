@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -28,14 +29,18 @@ public class GetPostListController {
         long id,
         String title,
         String author,
-        String content
+        String content,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
     ) {
         public static Response from(PostVo postVo) {
             return new Response(
                 postVo.id(),
                 postVo.title(),
                 postVo.author(),
-                postVo.content()
+                postVo.content(),
+                postVo.createdAt(),
+                postVo.updatedAt()
             );
         }
     }
