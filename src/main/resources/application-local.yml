@@ -1,3 +1,9 @@
+spring:
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
 logging:
   level:
     org.hibernate.SQL: DEBUG

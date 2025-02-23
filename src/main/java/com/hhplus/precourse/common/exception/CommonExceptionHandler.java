@@ -41,12 +41,21 @@ public class CommonExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    private ApiResponse<Void> constraintViolationException(ConstraintViolationException e,
+                                                           HttpServletRequest request) {
+        log.warn("[{}] 잘못된 요청이 발생하였습니다.", request.getRequestURI(), e);
+
+        return ApiResponse.fail(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
         IllegalArgumentException.class,
         IllegalStateException.class,
     })
-    public ApiResponse<Void> handleIllegalException(Exception e,
-                                                    HttpServletRequest request) {
+    public ApiResponse<Void> illegalException(Exception e,
+                                              HttpServletRequest request) {
         log.warn("[{}] 잘못된 요청이 발생하였습니다.", request.getRequestURI(), e);
 
         return ApiResponse.fail(e.getMessage());
@@ -57,8 +66,7 @@ public class CommonExceptionHandler {
         HttpRequestMethodNotSupportedException.class,
         MethodArgumentTypeMismatchException.class,
         MissingServletRequestParameterException.class,
-        MultipartException.class,
-        ConstraintViolationException.class
+        MultipartException.class
     })
     public ApiResponse<Void> handle4xx(Exception e,
                                        HttpServletRequest request) {
