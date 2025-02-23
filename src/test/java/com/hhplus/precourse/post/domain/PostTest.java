@@ -84,4 +84,35 @@ class PostTest {
                 .hasMessage(PASSWORD_NOT_MATCHED.message());
         }
     }
+
+    @DisplayName("비밀번호 검증 테스트")
+    @Nested
+    class ValidatePasswordTest {
+        @Test
+        void success() {
+            // given
+            var post = new PostFixture().build();
+            var password = post.password();
+
+            // when
+            var throwable = catchThrowable(() ->post.validatePassword(password));
+
+            // then
+            assertThat(throwable).isNull();
+        }
+
+        @Test
+        void 비밀번호가_일치하지_않으면_에외발생() {
+            // given
+            var post = new PostFixture().build();
+            var password = "다른 비밀번호";
+
+            // when
+            var throwable = catchThrowable(() -> post.validatePassword(password));
+
+            // then
+            assertThat(throwable).isInstanceOf(DomainException.class)
+                .hasMessage(PASSWORD_NOT_MATCHED.message());
+        }
+    }
 }

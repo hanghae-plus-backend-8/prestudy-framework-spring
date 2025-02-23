@@ -81,14 +81,18 @@ public class Post extends BaseEntity {
                        String title,
                        String content,
                        String password) {
-        if (!Objects.equals(this.password, password)) {
-            throw new DomainException(PASSWORD_NOT_MATCHED);
-        }
+        validatePassword(password);
 
         this.author = author;
         this.title = title;
         this.content = content;
         validateValues();
+    }
+
+    public void validatePassword(String password) {
+        if (!Objects.equals(this.password, password)) {
+            throw new DomainException(PASSWORD_NOT_MATCHED);
+        }
     }
 
     @Getter
