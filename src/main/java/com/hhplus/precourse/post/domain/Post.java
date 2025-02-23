@@ -1,11 +1,18 @@
 package com.hhplus.precourse.post.domain;
 
 import com.hhplus.precourse.common.entity.BaseEntity;
+import com.hhplus.precourse.common.exception.DomainException;
+import com.hhplus.precourse.common.support.Status;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+
+import java.util.Objects;
+
+import static com.hhplus.precourse.post.domain.Post.PostErrorStatus.PASSWORD_NOT_MATCHED;
 
 @Entity
 @Table(name = "posts")
@@ -68,5 +75,28 @@ public class Post extends BaseEntity {
         if (content.length() >= 1000) {
             throw new IllegalArgumentException("내용은 1000자 이하로 입력해주세요.");
         }
+    }
+
+    public void update(String author,
+                       String title,
+                       String content,
+                       String password) {
+        if (!Objects.equals(this.password, password)) {
+            throw new DomainException(PASSWORD_NOT_MATCHED);
+        }
+
+        this.author = author;
+        this.title = title;
+        this.content = content;
+        validateValues();
+    }
+
+    @Getter
+    @Accessors(fluent = true)
+    @RequiredArgsConstructor
+    enum PostErrorStatus implements Status {
+        PASSWORD_NOT_MATCHED("비밀번호가 일치하지 않습니다.");
+
+        private final String message;
     }
 }

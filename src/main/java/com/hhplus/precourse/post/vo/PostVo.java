@@ -12,8 +12,8 @@ public record PostVo(
     public static PostVo from(Post post) {
         return new PostVo(
             post.id(),
-            post.title(),
             post.author(),
+            post.title(),
             post.content(),
             post.password()
         );
