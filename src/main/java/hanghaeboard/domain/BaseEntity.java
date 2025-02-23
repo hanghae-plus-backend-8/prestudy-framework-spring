@@ -1,6 +1,7 @@
 package hanghaeboard.domain;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -28,4 +29,18 @@ public class BaseEntity {
 
     @LastModifiedBy
     private String lastModifiedBy;
+
+    @Column(columnDefinition = "TIMESTAMP NULL")
+    private LocalDateTime deletedDatetime;
+
+
+    private String deletedBy;
+
+    public void delete() {
+        this.deletedDatetime = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() {
+        return this.deletedDatetime != null;
+    }
 }
