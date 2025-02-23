@@ -28,16 +28,24 @@ public class User {
 
     private String password;
 
-    private User(String username, String password) {
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    private User(String username, String password, UserRole role) {
         validationUsername(username);
         validationPassword(password);
 
         this.username = username;
         this.password = password;
+        this.role = role;
     }
 
-    public static User of(String username, String password) {
-        return new User(username, password);
+    public static User ofUser(String username, String password) {
+        return new User(username, password, UserRole.USER);
+    }
+
+    public static User ofAdmin(String username, String password) {
+        return new User(username, password, UserRole.ADMIN);
     }
 
     private void validationUsername(String username) {
@@ -70,5 +78,9 @@ public class User {
 
     public boolean isNotEqualPassword(String password) {
         return !this.password.equals(password);
+    }
+
+    public boolean isAdmin() {
+        return UserRole.ADMIN.equals(role);
     }
 }

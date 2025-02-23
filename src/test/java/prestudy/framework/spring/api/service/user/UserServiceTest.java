@@ -41,7 +41,7 @@ class UserServiceTest extends IntegrationTestSupport {
         String username = "123abc";
         String password = "Password12!";
 
-        userRepository.save(User.of(username, password));
+        userRepository.save(User.ofUser(username, password));
 
         UserCreateCommand createCommand = UserCreateCommand.builder()
             .username(username)
@@ -98,7 +98,7 @@ class UserServiceTest extends IntegrationTestSupport {
         String username = "123abc";
         String password = "Password12!";
 
-        userRepository.save(User.of(username, password));
+        userRepository.save(User.ofUser(username, password));
 
         UserLoginCommand loginCommand = UserLoginCommand.builder()
             .username("123abc")
@@ -118,7 +118,7 @@ class UserServiceTest extends IntegrationTestSupport {
         String username = "123abc";
         String password = "Password12!";
 
-        User savedUser = userRepository.save(User.of(username, password));
+        User savedUser = userRepository.save(User.ofUser(username, password));
 
         UserLoginCommand loginCommand = UserLoginCommand.builder()
             .username("123abc")

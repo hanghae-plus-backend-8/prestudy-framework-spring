@@ -36,7 +36,7 @@ class UserRepositoryTest extends IntegrationTestSupport {
         String username = "123abc";
         String password = "Password12!";
 
-        userRepository.save(User.of(username, password));
+        userRepository.save(User.ofUser(username, password));
 
         // when
         Optional<User> user = userRepository.findByUsername(username);

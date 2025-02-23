@@ -18,7 +18,7 @@ class UserTest {
         String password = "<PASSWORD>";
 
         // when & then
-        assertThatThrownBy(() -> User.of(username, password))
+        assertThatThrownBy(() -> User.ofUser(username, password))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("유저명은 최소 4자 이상이여야 합니다.");
     }
@@ -31,7 +31,7 @@ class UserTest {
         String password = "<PASSWORD>";
 
         // when & then
-        assertThatThrownBy(() -> User.of(username, password))
+        assertThatThrownBy(() -> User.ofUser(username, password))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("유저명은 최대 10자 이상이여야 합니다.");
     }
@@ -44,7 +44,7 @@ class UserTest {
         String password = "<PASSWORD>";
 
         // when & then
-        assertThatThrownBy(() -> User.of(username, password))
+        assertThatThrownBy(() -> User.ofUser(username, password))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("유저명은 알파벳 소문자와 숫자로 구성되어야 합니다.");
     }
@@ -57,7 +57,7 @@ class UserTest {
         String password = "1234567";
 
         // when & then
-        assertThatThrownBy(() -> User.of(username, password))
+        assertThatThrownBy(() -> User.ofUser(username, password))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("비밀번호는 최소 8자 이상이여야 합니다.");
     }
@@ -70,7 +70,7 @@ class UserTest {
         String password = "1234567890123456";
 
         // when & then
-        assertThatThrownBy(() -> User.of(username, password))
+        assertThatThrownBy(() -> User.ofUser(username, password))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("비밀번호는 최대 15자 이상이여야 합니다.");
     }
@@ -83,7 +83,7 @@ class UserTest {
         String username = "123abc";
 
         // when & then
-        assertThatThrownBy(() -> User.of(username, password))
+        assertThatThrownBy(() -> User.ofUser(username, password))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("비밀번호는 알파벳 대소문자와 특수문자, 숫자로 구성되어야 합니다.");
     }
@@ -96,10 +96,40 @@ class UserTest {
         String password = "Password12!";
 
         // when
-        User user = User.of(username, password);
+        User user = User.ofUser(username, password);
 
         // then
         assertThat(user.getUsername()).isEqualTo(username);
         assertThat(user.getPassword()).isEqualTo(password);
+    }
+
+    @DisplayName("회원가입시 기본 권한은 일반 유저의 권한으로 생성된다.")
+    @Test
+    void createUserWithDefaultRole() {
+        // given
+        String username = "123abc";
+        String password = "Password12!";
+
+        // when
+        User user = User.ofUser(username, password);
+
+        // then
+        assertThat(user.getRole()).isEqualTo(UserRole.USER);
+    }
+
+    @DisplayName("유저가 관리자인지 판별한다.")
+    @Test
+    void isAdmin() {
+        // given
+        String username = "123abc";
+        String password = "Password12!";
+
+        // when
+        User user = User.ofUser(username, password);
+        User admin = User.ofAdmin(username, password);
+
+        // then
+        assertThat(user.isAdmin()).isFalse();
+        assertThat(admin.isAdmin()).isTrue();
     }
 }
