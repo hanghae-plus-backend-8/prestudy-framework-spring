@@ -39,7 +39,7 @@ class UserServiceTest extends IntegrationTestSupport {
     void createUserWithExistUsername() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
         userRepository.save(User.of(username, password));
 
@@ -59,7 +59,7 @@ class UserServiceTest extends IntegrationTestSupport {
     void createUser() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
         UserCreateCommand createCommand = UserCreateCommand.builder()
             .username(username)
@@ -96,7 +96,7 @@ class UserServiceTest extends IntegrationTestSupport {
     void loginWithWrongPassword() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
         userRepository.save(User.of(username, password));
 
@@ -116,13 +116,13 @@ class UserServiceTest extends IntegrationTestSupport {
     void loginUserWithReturnJwt() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
         User savedUser = userRepository.save(User.of(username, password));
 
         UserLoginCommand loginCommand = UserLoginCommand.builder()
             .username("123abc")
-            .password("Password12")
+            .password("Password12!")
             .build();
 
         // when

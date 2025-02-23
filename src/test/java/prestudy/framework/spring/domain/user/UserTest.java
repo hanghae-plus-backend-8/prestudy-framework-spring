@@ -75,7 +75,7 @@ class UserTest {
             .hasMessage("비밀번호는 최대 15자 이상이여야 합니다.");
     }
 
-    @DisplayName("비밀번호는 알파벳 대소문자와 숫자로 구성되어야 한다.")
+    @DisplayName("비밀번호는 알파벳 대소문자와 특수문자, 숫자로 구성되어야 한다.")
     @ParameterizedTest
     @ValueSource(strings = {"1234567890", "abcdefghij", "ABCDEFGHIJ", "123456abc", "패스워드입력해주세", "abcdefABCD", "ABCD1234"})
     void validatePasswordNoneMatch(String password) {
@@ -85,7 +85,7 @@ class UserTest {
         // when & then
         assertThatThrownBy(() -> User.of(username, password))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("비밀번호는 알파벳 대소문자와 숫자로 구성되어야 합니다.");
+            .hasMessage("비밀번호는 알파벳 대소문자와 특수문자, 숫자로 구성되어야 합니다.");
     }
 
     @DisplayName("유저명과 비밀번호가 올바르면 유저를 생성한다.")
@@ -93,7 +93,7 @@ class UserTest {
     void createUserWithValidUsernameAndPassword() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
         // when
         User user = User.of(username, password);

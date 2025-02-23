@@ -34,7 +34,7 @@ class UserRepositoryTest extends IntegrationTestSupport {
     void findByExistUsername() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
         userRepository.save(User.of(username, password));
 
