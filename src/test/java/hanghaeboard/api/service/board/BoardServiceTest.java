@@ -125,6 +125,20 @@ class BoardServiceTest {
         return Board.builder().title(title).content(content).writer(writer).password(password).build();
     }
 
+    @DisplayName("id로 게시물을 조회할 때 삭제된 게시물인 경우 조회할 수 없다.")
+    @Test
+    void findBoardById_deletedBoard() {
+        // given
+        Board board = makeBoard("yeop", "1234", "title2", "content2");
+        LocalDateTime now = LocalDateTime.now();
+        board.delete(now);
+        Board saved = boardRepository.save(board);
+        Long id = saved.getId();
+        // when // then
+        assertThatThrownBy(() -> boardService.findBoardById(id)).isInstanceOf(EntityNotFoundException.class).hasMessage("삭제된 게시물입니다.");
+
+    }
+
     @DisplayName("게시물을 수정할 수 있다.")
     @Test
     void modifyBoard() {
@@ -182,6 +196,31 @@ class BoardServiceTest {
         assertThatThrownBy(() -> boardService.updateBoard(id, request))
                 .isInstanceOf(InvalidPasswordException.class)
                 .hasMessage("비밀번호가 올바르지 않습니다.");
+
+    }
+
+    @DisplayName("게시물을 수정할 때 삭제된 게시물은 수정할 수 없다.")
+    @Test
+    void modifyBoard_isDeletedBoard() {
+        // given
+        Board board = makeBoard("yeop", "1234", "title", "content");
+        LocalDateTime deletedDatetime = LocalDateTime.now();
+        board.delete(deletedDatetime);
+
+        Board saved = boardRepository.save(board);
+
+        Long id = saved.getId();
+        UpdateBoardRequest request = UpdateBoardRequest.builder()
+                .password("1234")
+                .writer("yeop1")
+                .title("changeTitle")
+                .content("changeContent")
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> boardService.updateBoard(id, request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("삭제된 게시물입니다.");
 
     }
 

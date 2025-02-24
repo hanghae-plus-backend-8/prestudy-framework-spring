@@ -41,7 +41,14 @@ public class BoardService {
     }
 
     public FindBoardResponse findBoardById(Long id){
-        return FindBoardResponse.from(boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("조회된 게시물이 없습니다.")));
+
+        Board findBoard = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("조회된 게시물이 없습니다."));
+
+        if(findBoard.isDeleted()){
+            throw new EntityNotFoundException("삭제된 게시물입니다.");
+        }
+
+        return FindBoardResponse.from(findBoard);
     }
 
     @Transactional
@@ -50,6 +57,10 @@ public class BoardService {
 
         if(!savedBoard.isCorrectPassword(request.getPassword())){
             throw new InvalidPasswordException("비밀번호가 올바르지 않습니다.");
+        }
+
+        if(savedBoard.isDeleted()){
+            throw new EntityNotFoundException("삭제된 게시물입니다.");
         }
 
         savedBoard.changeBoard(request.getWriter(), request.getTitle(), request.getContent());

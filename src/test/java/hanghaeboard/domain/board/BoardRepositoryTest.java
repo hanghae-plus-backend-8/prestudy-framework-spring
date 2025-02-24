@@ -72,6 +72,34 @@ class BoardRepositoryTest {
                 );
     }
 
+    @DisplayName("게시물 목록을 조회할 때 삭제되지 않은 게시물만 조회한다.")
+    @Test
+    void findAllBoard_notDeleted() throws Exception {
+        // given
+        Board board1 = makeBoard("yeop", "1234", "title1", "content1");
+        Thread.sleep(10);
+        Board board2 = makeBoard("yeop", "1234", "title2", "content2");
+        Thread.sleep(10);
+        Board board3 = makeBoard("yeop", "1234", "title3", "content3");
+
+        LocalDateTime deletedDatetime = LocalDateTime.now();
+
+        board3.delete(deletedDatetime);
+
+        boardRepository.saveAll(List.of(board1, board2, board3));
+
+        // when
+        List<FindBoardResponse> allBoard = boardRepository.findAllBoard();
+
+        // then
+        assertThat(allBoard).hasSize(2);
+        assertThat(allBoard).extracting("writer", "title", "content")
+                .containsExactly(
+                        tuple( "yeop", "title2", "content2")
+                        , tuple( "yeop", "title1", "content1")
+                );
+    }
+
     @DisplayName("게시물을 id로 조회할 수 있다.")
     @Test
     void findBoardById() {

@@ -22,6 +22,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 Projections.constructor(FindBoardResponse.class, board.id, board.writer
                         , board.title, board.content, board.createdDatetime, board.lastModifiedDatetime))
                 .from(board)
+                .where(board.deletedDatetime.isNull())
                 .orderBy(board.createdDatetime.desc()).fetch();
     }
 }
