@@ -2,10 +2,12 @@ package hanghaeboard.api.controller.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hanghaeboard.api.controller.board.request.CreateBoardRequest;
+import hanghaeboard.api.controller.board.request.DeleteBoardRequest;
 import hanghaeboard.api.controller.board.request.UpdateBoardRequest;
 import hanghaeboard.api.exception.exception.InvalidPasswordException;
 import hanghaeboard.api.service.board.BoardService;
 import hanghaeboard.api.service.board.response.CreateBoardResponse;
+import hanghaeboard.api.service.board.response.DeleteBoardResponse;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.api.service.board.response.UpdateBoardResponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,6 +40,7 @@ class BoardControllerTest {
 
     @MockitoBean
     private BoardService boardService;
+
 
     @DisplayName("게시물 목록을 조회할 수 있다.")
     @Test
@@ -454,12 +457,104 @@ class BoardControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isNotFound())
+                .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("400"))
                 .andExpect(jsonPath("$.message").value("비밀번호가 올바르지 않습니다."))
                 .andExpect(jsonPath("$.data").isEmpty())
         ;
     }
 
+    @DisplayName("게시물을 삭제할 수 있다.")
+    @Test
+    void deleteBoard() throws Exception{
+        // given
+        DeleteBoardRequest request = DeleteBoardRequest.builder().password("1234").build();
+
+        LocalDateTime deletedDatetime = LocalDateTime.of(2025, 2, 24, 14, 40);
+        DeleteBoardResponse response = DeleteBoardResponse.builder().deletedDatetime(deletedDatetime).build();
+
+
+        when(boardService.deleteBoard(any(), any())).thenReturn(response);
+
+        // when // then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/boards/1")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("OK"))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.deletedDatetime").value("2025-02-24T14:40:00"))
+        ;
+    }
+
+    @DisplayName("비밀번호 없이 게시물을 삭제할 수 없다.")
+    @Test
+    void deleteBoardWithoutPassword() throws Exception{
+        // given
+        DeleteBoardRequest request = DeleteBoardRequest.builder().build();
+
+        LocalDateTime deletedDatetime = LocalDateTime.of(2025, 2, 24, 14, 40);
+        DeleteBoardResponse response = DeleteBoardResponse.builder().deletedDatetime(deletedDatetime).build();
+
+
+        when(boardService.deleteBoard(any(), any())).thenReturn(response);
+
+        // when // then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/boards/1")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("비밀번호는 필수 입력입니다."))
+                .andExpect(jsonPath("$.data").isEmpty())
+        ;
+    }
+
+    @DisplayName("존재하지 않는 게시물인 경우 게시물을 삭제할 수 없다.")
+    @Test
+    void deleteBoard_notFoundBoard() throws Exception{
+        // given
+        DeleteBoardRequest request = DeleteBoardRequest.builder().password("1234").build();
+
+        when(boardService.deleteBoard(any(), any())).thenThrow(new EntityNotFoundException("조회된 게시물이 없습니다."));
+
+        // when // then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/boards/1")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.code").value("404"))
+                .andExpect(jsonPath("$.message").value("조회된 게시물이 없습니다."))
+                .andExpect(jsonPath("$.data").isEmpty())
+        ;
+    }
+
+    @DisplayName("비밀번호가 틀린 경우 게시물을 삭제할 수 없다.")
+    @Test
+    void deleteBoard_notInvalidPassword() throws Exception{
+        // given
+        DeleteBoardRequest request = DeleteBoardRequest.builder().password("1234").build();
+
+        when(boardService.deleteBoard(any(), any())).thenThrow(new InvalidPasswordException("비밀번호가 올바르지 않습니다."));
+
+        // when // then
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/boards/1")
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("400"))
+                .andExpect(jsonPath("$.message").value("비밀번호가 올바르지 않습니다."))
+                .andExpect(jsonPath("$.data").isEmpty())
+        ;
+    }
 
 }

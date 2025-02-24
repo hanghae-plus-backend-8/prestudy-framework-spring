@@ -36,8 +36,8 @@ public class BaseEntity {
 
     private String deletedBy;
 
-    public void delete() {
-        this.deletedDatetime = LocalDateTime.now();
+    public void delete(LocalDateTime deletedDatetime) {
+        this.deletedDatetime = deletedDatetime;
     }
 
     public boolean isDeleted() {

@@ -2,9 +2,11 @@ package hanghaeboard.api.controller.board;
 
 import hanghaeboard.api.ApiResponse;
 import hanghaeboard.api.controller.board.request.CreateBoardRequest;
+import hanghaeboard.api.controller.board.request.DeleteBoardRequest;
 import hanghaeboard.api.controller.board.request.UpdateBoardRequest;
 import hanghaeboard.api.service.board.BoardService;
 import hanghaeboard.api.service.board.response.CreateBoardResponse;
+import hanghaeboard.api.service.board.response.DeleteBoardResponse;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.api.service.board.response.UpdateBoardResponse;
 import jakarta.validation.Valid;
@@ -43,5 +45,9 @@ public class BoardController {
         return ApiResponse.ok(boardService.updateBoard(id, request));
     }
 
+    @DeleteMapping("/api/v1/boards/{id}")
+    public ApiResponse<DeleteBoardResponse> deleteBoard(@PathVariable Long id, @Valid @RequestBody DeleteBoardRequest request) throws Exception {
+        return ApiResponse.ok(boardService.deleteBoard(id, request));
+    }
 
 }

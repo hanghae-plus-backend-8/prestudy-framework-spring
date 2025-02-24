@@ -1,8 +1,10 @@
 package hanghaeboard.api.service.board;
 
 import hanghaeboard.api.controller.board.request.CreateBoardRequest;
+import hanghaeboard.api.controller.board.request.DeleteBoardRequest;
 import hanghaeboard.api.controller.board.request.UpdateBoardRequest;
 import hanghaeboard.api.exception.exception.InvalidPasswordException;
+import hanghaeboard.api.service.board.response.DeleteBoardResponse;
 import hanghaeboard.api.service.board.response.FindBoardResponse;
 import hanghaeboard.api.service.board.response.UpdateBoardResponse;
 import hanghaeboard.domain.board.Board;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -177,6 +180,78 @@ class BoardServiceTest {
 
         // when // then
         assertThatThrownBy(() -> boardService.updateBoard(id, request))
+                .isInstanceOf(InvalidPasswordException.class)
+                .hasMessage("비밀번호가 올바르지 않습니다.");
+
+    }
+
+    @DisplayName("게시물을 삭제할 수 있다.")
+    @Test
+    void deleteBoard() {
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title", "content"));
+        Long id = saved.getId();
+
+        DeleteBoardRequest request = DeleteBoardRequest.builder()
+                .password("1234")
+                .build();
+
+        // when
+        DeleteBoardResponse deleteBoardResponse = boardService.deleteBoard(id, request);
+
+        // then
+        assertThat(deleteBoardResponse).isNotNull();
+    }
+
+    @DisplayName("이미 삭제된 게시물인 경우에는 삭제하지 않고, 이전 삭제 시간을 반환한다.")
+    @Test
+    void deleteBoard_already() throws Exception{
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title", "content"));
+        Long id = saved.getId();
+
+        DeleteBoardRequest request = DeleteBoardRequest.builder()
+                .password("1234")
+                .build();
+
+        DeleteBoardResponse deleteBoardResponse = boardService.deleteBoard(id, request);
+        LocalDateTime deletedDatetime = deleteBoardResponse.getDeletedDatetime();
+        Thread.sleep(10);
+
+        // when
+        DeleteBoardResponse alreadyDeleteResponse = boardService.deleteBoard(id, request);
+
+        // then
+        assertThat(deletedDatetime).isEqualTo(alreadyDeleteResponse.getDeletedDatetime());
+    }
+
+    @DisplayName("게시물을 삭제할 때 해당 게시물이 없는 경우 삭제할 수 없다.")
+    @Test
+    void deleteBoard_notFoundBoard() {
+        // given
+        DeleteBoardRequest request = DeleteBoardRequest.builder()
+                .password("1234")
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> boardService.deleteBoard(1L, request))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("조회된 게시물이 없습니다.");
+    }
+
+    @DisplayName("게시물을 삭제할 때 비밀번호가 다른 경우 삭제할 수 없다.")
+    @Test
+    void deleteBoard_isNotCorrectPassword() {
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title", "content"));
+        Long id = saved.getId();
+
+        DeleteBoardRequest request = DeleteBoardRequest.builder()
+                .password("password")
+                .build();
+
+        // when // then
+        assertThatThrownBy(() -> boardService.deleteBoard(id, request))
                 .isInstanceOf(InvalidPasswordException.class)
                 .hasMessage("비밀번호가 올바르지 않습니다.");
 

@@ -37,7 +37,7 @@ public class ApiControllerAdvice {
         return ApiResponse.of(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPasswordException.class)
     public ApiResponse<Object> invalidPasswordExceptions(InvalidPasswordException e) {
         return ApiResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());

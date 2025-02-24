@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -102,6 +103,22 @@ class BoardRepositoryTest {
         assertThat(updatedBoard.getWriter()).isEqualTo("yeop1");
         assertThat(updatedBoard.getTitle()).isEqualTo("changeTitle");
         assertThat(updatedBoard.getContent()).isEqualTo("changeContent");
+    }
+
+    @DisplayName("게시물을 삭제할 수 있다.")
+    @Test
+    void deleteBoard() {
+        // given
+        Board saved = boardRepository.save(makeBoard("yeop", "1234", "title1", "content1"));
+        LocalDateTime deletedDatetime = LocalDateTime.of(2025, 2, 24, 14, 40);
+        Board board = boardRepository.findById(saved.getId()).orElseThrow();
+
+        // when
+        board.delete(deletedDatetime);
+
+        // then
+        Board deletedBoard = boardRepository.findById(board.getId()).orElseThrow();
+        assertThat(deletedBoard.getDeletedDatetime()).isEqualTo(deletedDatetime);
     }
 
     private static Board makeBoard(String writer, String password, String title, String content) {
