@@ -21,7 +21,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public List<BoardResponse> getBoards() {
-        List<Board> boards = boardRepository.findByOrderByCreatedDateDesc();
+        List<Board> boards = boardRepository.findByOrderByCreatedDateTimeDesc();
         return boards.stream()
             .map(BoardResponse::of)
             .toList();
