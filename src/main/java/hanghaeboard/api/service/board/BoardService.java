@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +24,6 @@ import java.util.List;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final Clock clock;
 
     @Transactional
     public CreateBoardResponse createBoard(CreateBoardRequest request) {
@@ -53,29 +51,31 @@ public class BoardService {
 
     @Transactional
     public UpdateBoardResponse updateBoard(Long id, UpdateBoardRequest request) {
-        Board savedBoard = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("조회된 게시물이 없습니다."));
+        Board findBoard = findBoard(id, request.getPassword());
 
-        if(!savedBoard.isCorrectPassword(request.getPassword())){
-            throw new InvalidPasswordException("비밀번호가 올바르지 않습니다.");
-        }
-
-        if(savedBoard.isDeleted()){
+        if(findBoard.isDeleted()){
             throw new EntityNotFoundException("삭제된 게시물입니다.");
         }
 
-        savedBoard.changeBoard(request.getWriter(), request.getTitle(), request.getContent());
+        findBoard.changeBoard(request.getWriter(), request.getTitle(), request.getContent());
 
-        return UpdateBoardResponse.from(savedBoard);
+        return UpdateBoardResponse.from(findBoard);
+    }
+
+    private Board findBoard(Long id, String request) {
+        Board findBoard = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("조회된 게시물이 없습니다."));
+
+        if (!findBoard.isCorrectPassword(request)) {
+            throw new InvalidPasswordException("비밀번호가 올바르지 않습니다.");
+        }
+        return findBoard;
     }
 
     @Transactional
     public DeleteBoardResponse deleteBoard(Long id, DeleteBoardRequest request){
-        Board savedBoard = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("조회된 게시물이 없습니다."));
-        LocalDateTime deletedDatetime = LocalDateTime.now();
+        Board savedBoard = findBoard(id, request.getPassword());
 
-        if(!savedBoard.isCorrectPassword(request.getPassword())){
-            throw new InvalidPasswordException("비밀번호가 올바르지 않습니다.");
-        }
+        LocalDateTime deletedDatetime = LocalDateTime.now();
 
         if(!savedBoard.isDeleted()){
             savedBoard.delete(deletedDatetime);
