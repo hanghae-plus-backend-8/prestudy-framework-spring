@@ -1,0 +1,7 @@
+### 게시물 목록 조회
+GET localhost:8080/api/v1/boards
+Content-Type: application/json
+
+{
+
+}
