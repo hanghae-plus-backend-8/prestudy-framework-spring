@@ -8,13 +8,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import prestudy.framework.spring.domain.BaseEntity;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Board {
+public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,15 +27,12 @@ public class Board {
 
     private String password;
 
-    private LocalDateTime createdDate;
-
     @Builder
-    private Board(String title, String content, String writer, String password, LocalDateTime createdDate) {
+    private Board(String title, String content, String writer, String password) {
         this.title = title;
         this.content = content;
         this.writer = writer;
         this.password = password;
-        this.createdDate = createdDate;
     }
 
     public boolean isInvalidPassword(String password) {
