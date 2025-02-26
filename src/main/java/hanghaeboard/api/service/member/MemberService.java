@@ -1,6 +1,6 @@
 package hanghaeboard.api.service.member;
 
-import hanghaeboard.api.controller.member.CreateMemberRequest;
+import hanghaeboard.api.controller.member.request.CreateMemberRequest;
 import hanghaeboard.api.service.member.response.FindMember;
 import hanghaeboard.domain.member.Member;
 import hanghaeboard.domain.member.MemberRepository;
