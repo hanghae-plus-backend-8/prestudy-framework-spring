@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class UserFixture implements TestFixture<User> {
     private long id = 1L;
-    private String name = "testName";
+    private String name = "test1234";
     private String password = "testPassword";
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();

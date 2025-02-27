@@ -33,3 +33,8 @@ spring:
         useServerPrepStmts: true
         rewriteBatchedStatements: false
         useSsl: false
+
+application:
+  jwt:
+    secret: {JWT_SECRET}
+    expiration: 86400000
