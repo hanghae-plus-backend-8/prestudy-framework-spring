@@ -21,21 +21,11 @@ public class UpdatePostController {
     @PutMapping("/posts/{id}")
     ApiResponse<Response> update(@PathVariable Long id,
                                  @Valid @RequestBody Request request) {
-        var command = convertToCommand(id, request);
+        var command = request.toCommand(id);
         var postVo = service.update(command);
 
         return ApiResponse.success(
             Response.from(postVo)
-        );
-    }
-
-    private UpdatePostService.Command convertToCommand(Long id, Request request) {
-        return new UpdatePostService.Command(
-            id,
-            request.author(),
-            request.title(),
-            request.content(),
-            request.password()
         );
     }
 
@@ -50,6 +40,15 @@ public class UpdatePostController {
         @NotBlank(message = "비밀번호는 필수 값입니다.")
         String password
     ) {
+        public UpdatePostService.Command toCommand(Long id) {
+            return new UpdatePostService.Command(
+                id,
+                author,
+                title,
+                content,
+                password
+            );
+        }
     }
 
     record Response(
