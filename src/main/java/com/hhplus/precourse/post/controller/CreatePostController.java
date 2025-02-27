@@ -54,17 +54,6 @@ public class CreatePostController {
         LocalDateTime createdAt,
         LocalDateTime updatedAt
     ) {
-        /*
-        to json
-        {
-            "id": 1,
-            "title": "testTitle",
-            "author": "testAuthor",
-            "content": "testContent",
-            "createdAt": "2021-08-01T00:00:00",
-            "updatedAt": "2021-08-01T00:00:00"
-            }
-         */
         public static Response from(PostVo postVo) {
             return new Response(
                 postVo.id(),

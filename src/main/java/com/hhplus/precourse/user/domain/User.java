@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.util.Objects;
+
 import static com.hhplus.precourse.user.domain.User.ExceptionStatus.INVALID_PARAMETER;
 
 @Entity
@@ -62,6 +64,14 @@ public class User extends BaseEntity {
         if (!password.matches("^[a-zA-Z0-9]*$")) {
             throw new DomainException(INVALID_PARAMETER, "비밀번호는 알파벳 대소문자, 숫자로 구성되어야합니다.");
         }
+    }
+
+    public boolean matchPassword(String password) {
+        return Objects.equals(this.password, password);
+    }
+
+    public boolean notMatchPassword(String password) {
+        return !matchPassword(password);
     }
 
     @Getter
