@@ -26,7 +26,7 @@ public class CreatePostController {
         );
     }
 
-    record Request(
+    public record Request(
         @NotBlank(message = "작성자명은 필수 값입니다.")
         String author,
         @NotBlank(message = "제목은 필수 값입니다.")
@@ -54,6 +54,17 @@ public class CreatePostController {
         LocalDateTime createdAt,
         LocalDateTime updatedAt
     ) {
+        /*
+        to json
+        {
+            "id": 1,
+            "title": "testTitle",
+            "author": "testAuthor",
+            "content": "testContent",
+            "createdAt": "2021-08-01T00:00:00",
+            "updatedAt": "2021-08-01T00:00:00"
+            }
+         */
         public static Response from(PostVo postVo) {
             return new Response(
                 postVo.id(),
