@@ -108,7 +108,9 @@ public class ControllerTestContext {
     }
 
     protected enum Tags {
-        POST("게시글");
+        POST("게시글"),
+        USER("사용자")
+        ;
 
         private final String tagName;
 
