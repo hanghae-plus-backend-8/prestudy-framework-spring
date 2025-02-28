@@ -113,4 +113,13 @@ public class CommonExceptionHandler {
 
         return ApiResponse.error(e.message());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DomainException.class)
+    public ApiResponse<Void> domainException(DomainException e,
+                                             HttpServletRequest request) {
+        log.warn("[{}] 도메인 오류가 발생하였습니다.", request.getRequestURI(), e);
+
+        return ApiResponse.fail(e.status(), e.message());
+    }
 }
