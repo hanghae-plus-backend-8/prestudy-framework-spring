@@ -32,7 +32,7 @@ jobs:
         id: parse_secrets_git_env
         run: |
           echo "Extracting secrets..."
-          echo '${{ secrets.META_DATA }}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
+          echo '${{ secrets.META_DATA }}' | jq -r 'to_entries | .[] | "echo \(.key)=\(.value) >> $GITHUB_ENV"' | bash
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
