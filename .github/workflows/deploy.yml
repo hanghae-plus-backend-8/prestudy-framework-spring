@@ -54,6 +54,7 @@ jobs:
           username: ${{ env.AWS_USER }}
           key: ${{ secrets.AWS_KEY }}
           script: |
+            echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USER }}" --password-stdin
             CONTAINER_ID=$(sudo docker ps -q --filter "name=${{ env.DOCKER_REPO }}")
             if [ ! -z "$CONTAINER_ID" ]; then
               sudo docker stop $CONTAINER_ID
