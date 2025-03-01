@@ -1,0 +1,51 @@
+---
+
+spring:
+  profiles:
+    default: dev
+  jackson:
+    time-zone: Asia/Seoul
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/hanghaeBoard?useSSL=false&serverTimezone=Asia/Seoul
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+  jwt:
+    secret-key: A3B5D2F8G9H1J2K4L6M7N8P0Q1R2T3V4X5Y6Z7W8A9B0C1D2E3F4G5H6J7K8L9M0N1P2Q3R4T5
+    expiration-time: 60000
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+
+  datasource:
+    url: jdbc:h2:mem:~/hanghaeBoard
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  sql:
+    init:
+      mode: never
