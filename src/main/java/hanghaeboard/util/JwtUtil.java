@@ -12,7 +12,7 @@ public class JwtUtil {
 
     @Value("${spring.jwt.secret-key}")
     private String SECRET_KEY;
-    @Value("${spring.jwt.expriation-time}")
+    @Value("${spring.jwt.expiration-time}")
     private long EXPIRATION_TIME;
 
     public String generateToken(String username) {
