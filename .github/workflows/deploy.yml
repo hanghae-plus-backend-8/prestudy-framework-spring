@@ -43,21 +43,21 @@ jobs:
 
       - name: Docker build & push to Hub
         run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
-          docker build -f Dockerfile -t ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }} .
-          docker push ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }}
+          echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USER }}" --password-stdin
+          docker build -f Dockerfile -t ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }} .
+          docker push ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
           
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.AWS_HOST }}
-          username: ${{ secrets.AWS_USER }}
+          host: ${{ env.AWS_HOST }}
+          username: ${{ env.AWS_USER }}
           key: ${{ secrets.AWS_KEY }}
           script: |
-            CONTAINER_ID=$(sudo docker ps -q --filter "name=${{ secrets.DOCKER_REPO }}")
+            CONTAINER_ID=$(sudo docker ps -q --filter "name=${{ env.DOCKER_REPO }}")
             if [ ! -z "$CONTAINER_ID" ]; then
               sudo docker stop $CONTAINER_ID
               sudo docker rm $CONTAINER_ID
             fi
-            sudo docker pull ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }}
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }}
+            sudo docker pull ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
+            sudo docker run -d -p 8080:8080 ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
