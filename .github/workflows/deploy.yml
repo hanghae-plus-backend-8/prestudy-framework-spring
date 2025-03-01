@@ -23,13 +23,13 @@ jobs:
           find src
 
       - name: Parse docker compose secrets
-        id: parse_secrets
+        id: parse_secrets_env
         run: |
           echo "Extracting secrets..."
           echo '${{ secrets.DOCKER_COMPOSE_ENV }}' | jq -r 'to_entries | .[] | "echo \(.key)=\(.value) > .env
 
       - name: Parse git enviornment secrets
-        id: parse_secrets
+        id: parse_secrets_git_env
         run: |
           echo "Extracting secrets..."
           echo '${{ secrets.META_DATA }}' | jq -r 'to_entries | .[] | "echo \(.key)=\(.value) >> $GITHUB_ENV"' | bash
