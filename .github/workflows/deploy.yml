@@ -54,7 +54,7 @@ jobs:
           username: ${{ env.AWS_USER }}
           key: ${{ secrets.AWS_KEY }}
           script: |
+            docker-compose down
             echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USER }}" --password-stdin
-            docker-compose stop app-backend || true && docker-compose rm app-backend || true
             docker pull ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
             docker-compose up -d
