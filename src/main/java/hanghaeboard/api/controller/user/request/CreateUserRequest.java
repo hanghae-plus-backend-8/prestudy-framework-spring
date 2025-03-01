@@ -1,6 +1,6 @@
-package hanghaeboard.api.controller.member.request;
+package hanghaeboard.api.controller.user.request;
 
-import hanghaeboard.domain.member.Member;
+import hanghaeboard.domain.user.User;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CreateMemberRequest {
+public class CreateUserRequest {
 
     @Size(min = 4, max = 10, message = "아이디는 4글자 이상, 10글자 이하여야 합니다.")
     @Pattern(regexp = "[a-z0-9]+", message = "아이디는 소문자 영문과 숫자로만 이루어져야 합니다.")
@@ -20,12 +20,12 @@ public class CreateMemberRequest {
     private String password;
 
     @Builder
-    private CreateMemberRequest(String username, String password) {
+    private CreateUserRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public Member toEntity(){
-        return Member.builder().username(this.username).password(this.password).build();
+    public User toEntity(){
+        return User.builder().username(this.username).password(this.password).build();
     }
 }
