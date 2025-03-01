@@ -55,10 +55,6 @@ jobs:
           key: ${{ secrets.AWS_KEY }}
           script: |
             echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USER }}" --password-stdin
-            CONTAINER_ID=$(sudo docker ps -q --filter "name=${{ env.DOCKER_REPO }}")
-            if [ ! -z "$CONTAINER_ID" ]; then
-              docker stop $CONTAINER_ID
-              docker rm $CONTAINER_ID
-            fi
+            docker-compose stop backend || true && docker-compose rm backend || true
             docker pull ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
             docker-compose up -d
