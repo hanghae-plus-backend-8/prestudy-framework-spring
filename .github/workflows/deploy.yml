@@ -57,8 +57,8 @@ jobs:
             echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USER }}" --password-stdin
             CONTAINER_ID=$(sudo docker ps -q --filter "name=${{ env.DOCKER_REPO }}")
             if [ ! -z "$CONTAINER_ID" ]; then
-              sudo docker stop $CONTAINER_ID
-              sudo docker rm $CONTAINER_ID
+              docker stop $CONTAINER_ID
+              docker rm $CONTAINER_ID
             fi
-            sudo docker pull ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
-            sudo docker run -d -p 8080:8080 ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
+            docker pull ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
+            docker run -d -p 8080:8080 ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
