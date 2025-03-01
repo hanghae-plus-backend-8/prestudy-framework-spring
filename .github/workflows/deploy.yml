@@ -65,7 +65,7 @@ jobs:
           docker push ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
 
   deploy:
-    needs: build
+    needs: dockerize
     runs-on: ubuntu-latest
     steps:
       - name: Parse docker compose secrets
