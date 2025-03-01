@@ -61,7 +61,7 @@ jobs:
       - name: Docker build & push to Hub
         run: |
           echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USER }}" --password-stdin
-          docker build Dock-t ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }} .
+          docker build -t ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }} .
           docker push ${{ env.DOCKER_USER }}/${{ env.DOCKER_REPO }}:${{ env.DOCKER_TAG }}
 
   deploy:
