@@ -26,13 +26,13 @@ jobs:
         id: parse_secrets_env
         run: |
           echo "Extracting secrets..."
-          echo '${{ secrets.DOCKER_COMPOSE_ENV }}' | jq -r 'to_entries | .[] | "echo \(.key)=\(.value) > .env
+          echo '${{ secrets.DOCKER_COMPOSE_ENV }}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' > .env
 
       - name: Parse git enviornment secrets
         id: parse_secrets_git_env
         run: |
           echo "Extracting secrets..."
-          echo '${{ secrets.META_DATA }}' | jq -r 'to_entries | .[] | "echo \(.key)=\(.value) >> $GITHUB_ENV"' | bash
+          echo '${{ secrets.META_DATA }}' | jq -r 'to_entries | .[] | "\(.key)=\(.value)"' >> $GITHUB_ENV
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
@@ -43,7 +43,7 @@ jobs:
 
       - name: Docker build & push to Hub
         run: |
-          docker login -u ${{ secrets.DOCKER_USER }} -p "${{ secrets.DOCKER_PASSWORD }}"
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USER }}" --password-stdin
           docker build -f Dockerfile -t ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }} .
           docker push ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }}
           
@@ -54,6 +54,10 @@ jobs:
           username: ${{ secrets.AWS_USER }}
           key: ${{ secrets.AWS_KEY }}
           script: |
-            sudo docker rm -f $(sudo docker ps -qa) # Remove all running containers
+            CONTAINER_ID=$(sudo docker ps -q --filter "name=${{ secrets.DOCKER_REPO }}")
+            if [ ! -z "$CONTAINER_ID" ]; then
+              sudo docker stop $CONTAINER_ID
+              sudo docker rm $CONTAINER_ID
+            fi
             sudo docker pull ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }}
             sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USER }}/${{ secrets.DOCKER_REPO }}:${{ secrets.DOCKER_TAG }}
