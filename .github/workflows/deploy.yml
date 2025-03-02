@@ -28,14 +28,21 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Archive Artifacts (JAR & Docker Compose)
+      - name: Upload JAR & Dockerfile Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: dockerize-artifacts
           path: |
             build/libs/*.jar
-            docker-compose.yml
             Dockerfile
+
+      - name: Upload Docker Compose Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-artifacts
+          path: |
+            docker-compose.yml
+
   dockerize:
     needs: build
     runs-on: ubuntu-latest
@@ -52,10 +59,10 @@ jobs:
           echo "Extracting secrets..."
           echo '${{ secrets.META_DATA }}' | jq -r 'to_entries | .[] | "echo \(.key)=\(.value) >> $GITHUB_ENV"' | bash
 
-      - name: Download Artifacts
+      - name: Download JAR & Dockerfile Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: dockerize-artifacts
           path: .
 
       - name: Docker build & push to Hub
@@ -80,10 +87,10 @@ jobs:
           echo "Extracting secrets..."
           echo '${{ secrets.META_DATA }}' | jq -r 'to_entries | .[] | "echo \(.key)=\(.value) >> $GITHUB_ENV"' | bash
 
-      - name: Download Artifacts
+      - name: Download Docker Compose Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
+          name: deploy-artifacts
           path: .
 
       - name: Copy `docker-compose.yml` to EC2
