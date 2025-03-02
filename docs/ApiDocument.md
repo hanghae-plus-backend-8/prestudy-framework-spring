@@ -256,3 +256,74 @@
 |-----------------|--------|-------------|
 | code            | Number | 응답 코드       |
 | message         | String | 응답 메세지      |
+
+## 사용자 API
+
+### 회원가입
+
+**[Description]**  
+사용자가 회원가입을 한다.
+
+**[Request]**
+
++ URL : `/api/v1/users`
++ Method : `POST`
++ Request Body
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
++ Request Fields
+
+| Path     | Type   | Required | Description |
+|----------|--------|----------|-------------|
+| username | String | true     | 사용자명        |
+| password | String | true     | 사용자 패스워드    |
+
+**[Response]**
+
++ Response
+
+```json
+{
+  "code": 200,
+  "message": "OK"
+}
+```
+
+### 로그인
+
+**[Description]**  
+사용자가 회원가입한 정보로 로그인을 한다.
+
+**[Request]**
+
++ URL : `/api/v1/users/login`
++ Method : `POST`
++ Request Body
+```json
+{
+  "username": "string",
+  "password": "string"
+}
+```
++ Request Fields
+
+| Path     | Type   | Required | Description |
+|----------|--------|----------|-------------|
+| username | String | true     | 사용자명        |
+| password | String | true     | 사용자 패스워드    |
+
+**[Response]**
+
++ Header : `Authorization : Bearer {JWT Token}`
++ Response
+
+```json
+{
+  "code": 200,
+  "message": "OK"
+}
+
