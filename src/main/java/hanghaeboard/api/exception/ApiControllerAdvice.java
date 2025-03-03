@@ -3,6 +3,7 @@ package hanghaeboard.api.exception;
 import hanghaeboard.api.ApiResponse;
 import hanghaeboard.api.exception.exception.InvalidPasswordException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
@@ -41,6 +42,18 @@ public class ApiControllerAdvice {
     @ExceptionHandler(InvalidPasswordException.class)
     public ApiResponse<Object> invalidPasswordExceptions(InvalidPasswordException e) {
         return ApiResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ApiResponse<Object> illegalArgumentException(IllegalArgumentException e){
+        return ApiResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DuplicateKeyException.class)
+    public ApiResponse<Object> illegalArgumentException(DuplicateKeyException e){
+        return ApiResponse.of(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

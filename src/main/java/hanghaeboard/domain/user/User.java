@@ -1,4 +1,4 @@
-package hanghaeboard.domain.member;
+package hanghaeboard.domain.user;
 
 import hanghaeboard.domain.BaseEntity;
 import jakarta.persistence.*;
@@ -7,14 +7,15 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Table(name = "users")
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseEntity {
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "user_id")
     private Long id;
 
     private String username;
@@ -22,9 +23,13 @@ public class Member extends BaseEntity {
     private String password;
 
     @Builder
-    private Member(Long id, String username, String password) {
+    private User(Long id, String username, String password) {
         this.id = id;
         this.username = username;
         this.password = password;
+    }
+
+    public boolean isCorrectPassword(String password){
+        return this.password.equals(password);
     }
 }
