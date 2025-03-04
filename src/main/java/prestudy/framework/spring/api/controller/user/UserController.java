@@ -1,5 +1,6 @@
 package prestudy.framework.spring.api.controller.user;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,14 @@ public class UserController {
 
     private final UserService userService;
 
+    @Tag(name = "회원가입")
     @PostMapping("/api/v1/users")
     public ApiResponse<Void> createUser(@Valid @RequestBody UserCreateRequest request) {
         userService.createUser(request.toCommand());
         return ApiResponse.success();
     }
 
+    @Tag(name = "로그인")
     @PostMapping("/api/v1/users/login")
     public ResponseEntity<ApiResponse<Void>> loginUser(@Valid @RequestBody UserLoginRequest request) {
         String jwt = userService.loginUser(request.toCommand());

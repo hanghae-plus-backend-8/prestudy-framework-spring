@@ -12,7 +12,6 @@ import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.board.BoardRepository;
 import prestudy.framework.spring.support.IntegrationTestSupport;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +42,6 @@ class BoardServiceTest extends IntegrationTestSupport {
             .content("다음글 내용")
             .writer("홍길동")
             .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 1))
             .build();
 
         boardRepository.saveAll(List.of(board1, board2));
@@ -53,10 +51,10 @@ class BoardServiceTest extends IntegrationTestSupport {
 
         // then
         assertThat(boards).hasSize(2)
-            .extracting("title", "content", "writer", "createdDate")
+            .extracting("title", "content", "writer")
             .containsExactly(
-                tuple("다음글 제목", "다음글 내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 1)),
-                tuple("제목", "내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 0))
+                tuple("다음글 제목", "다음글 내용", "홍길동"),
+                tuple("제목", "내용", "홍길동")
             );
     }
 
@@ -96,7 +94,6 @@ class BoardServiceTest extends IntegrationTestSupport {
         assertThat(response.getTitle()).isEqualTo("제목");
         assertThat(response.getContent()).isEqualTo("내용");
         assertThat(response.getWriter()).isEqualTo("홍길동");
-        assertThat(response.getCreatedDate()).isEqualTo(LocalDateTime.of(2025, 2, 7, 12, 0));
     }
 
     @DisplayName("게시글 상세 조회시 ID는 유효해야 한다.")
@@ -244,7 +241,6 @@ class BoardServiceTest extends IntegrationTestSupport {
             .content("내용")
             .writer("홍길동")
             .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
             .build();
     }
 }

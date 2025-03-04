@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import prestudy.framework.spring.support.IntegrationTestSupport;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,14 +19,13 @@ class BoardRepositoryTest extends IntegrationTestSupport {
 
     @DisplayName("전체 게시글 목록 조회")
     @Test
-    void findByOrderByCreatedDateDesc() {
+    void findByOrderByCreatedDateTimeDesc() {
         // given
         Board board1 = Board.builder()
             .title("제목")
             .content("내용")
             .writer("홍길동")
             .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 0))
             .build();
 
         Board board2 = Board.builder()
@@ -35,21 +33,20 @@ class BoardRepositoryTest extends IntegrationTestSupport {
             .content("다음글 내용")
             .writer("홍길동")
             .password("<PASSWORD>")
-            .createdDate(LocalDateTime.of(2025, 2, 7, 12, 1))
             .build();
 
         boardRepository.saveAll(List.of(board1, board2));
 
         // when
-        List<Board> boards = boardRepository.findByOrderByCreatedDateDesc();
+        List<Board> boards = boardRepository.findByOrderByCreatedDateTimeDesc();
 
         // then
         assertThat(boards)
             .hasSize(2)
-            .extracting("title", "content", "writer", "createdDate")
+            .extracting("title", "content", "writer")
             .containsExactly(
-                tuple("다음글 제목", "다음글 내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 1)),
-                tuple("제목", "내용", "홍길동", LocalDateTime.of(2025, 2, 7, 12, 0))
+                tuple("다음글 제목", "다음글 내용", "홍길동"),
+                tuple("제목", "내용", "홍길동")
             );
     }
 }
