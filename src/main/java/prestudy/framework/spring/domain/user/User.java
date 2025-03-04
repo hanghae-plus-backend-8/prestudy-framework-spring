@@ -49,6 +49,14 @@ public class User extends BaseEntity {
         return new User(username, password, UserRole.ADMIN);
     }
 
+    public boolean isNotEqualPassword(String password) {
+        return !this.password.equals(password);
+    }
+
+    public boolean isAdmin() {
+        return UserRole.ADMIN.equals(role);
+    }
+
     private void validationUsername(String username) {
         if (username.length() < USERNAME_MIN_LENGTH) {
             throw new IllegalArgumentException("유저명은 최소 4자 이상이여야 합니다.");
@@ -75,13 +83,5 @@ public class User extends BaseEntity {
         if (!PASSWORD_REGEX.matcher(password).matches()) {
             throw new IllegalArgumentException("비밀번호는 알파벳 대소문자와 특수문자, 숫자로 구성되어야 합니다.");
         }
-    }
-
-    public boolean isNotEqualPassword(String password) {
-        return !this.password.equals(password);
-    }
-
-    public boolean isAdmin() {
-        return UserRole.ADMIN.equals(role);
     }
 }
