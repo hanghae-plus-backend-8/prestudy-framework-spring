@@ -131,7 +131,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // then
         assertThat(jwt).isNotBlank();
 
-        Claims claims = jwtProvider.parseToken(jwt);
+        Claims claims = jwtProvider.verify(jwt);
         assertThat(claims.getSubject()).isEqualTo(savedUser.getId().toString());
         assertThat(claims.getExpiration()).isAfter(new Date());
     }
