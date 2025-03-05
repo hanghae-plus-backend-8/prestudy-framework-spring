@@ -1,5 +1,22 @@
 # API 명세서
 
+<!-- TOC -->
+* [API 명세서](#api-명세서)
+  * [게시글 API](#게시글-api)
+    * [게시글 조회](#게시글-조회)
+    * [게시글 상세 조회](#게시글-상세-조회)
+    * [게시글 생성](#게시글-생성)
+    * [게시글 수정](#게시글-수정)
+    * [게시글 삭제](#게시글-삭제)
+  * [사용자 API](#사용자-api)
+    * [회원가입](#회원가입)
+    * [로그인](#로그인)
+  * [댓글 API](#댓글-api)
+    * [댓글 작성](#댓글-작성)
+    * [댓글 수정](#댓글-수정)
+    * [댓글 삭제](#댓글-삭제)
+<!-- TOC -->
+
 ## 게시글 API
 
 ### 게시글 조회
@@ -327,3 +344,151 @@
   "message": "OK"
 }
 
+```
+
+## 댓글 API
+
+### 댓글 작성
+
+**[Description]**  
+선택한 게시글의 댓글을 작성한다.
+
+**[Request]**
+
++ URL : `/api/v1/boards/{id}/comments`
++ Method : `POST`
++ Header : `Authorization : Bearer {JWT Token}`
++ Path Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| id        | 게시글 ID      |
++ Request Body
+```json
+{
+  "content": "string"
+}
+```
+
++ Request Fields
+
+| Path    | Type   | Required | Description |
+|---------|--------|----------|-------------|
+| content | String | true     | 댓글 내용       |
+
+**[Response]**
+
++ Response
+
+```json
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "id": 1,
+    "content": "string",
+    "createdDate": "2025-02-15T00:02:42.261Z"
+  }
+}
+```
+
++ Response Fields
+
+| Path            | Type   | Description |
+|-----------------|--------|-------------|
+| code            | Number | 응답 코드       |
+| message         | String | 응답 메세지      |
+| data.id         | Number | 댓글 ID       |
+| data.content    | String | 댓글 내용       |
+| data.createDate | String | 댓글 생성일시     |
+
+### 댓글 수정
+
+**[Description]**  
+선택한 게시글의 댓글을 수정한다.
+
+**[Request]**
+
++ URL : `/api/v1/boards/{boardId}/comments/{commentId}`
++ Method : `PUT`
++ Header : `Authorization : Bearer {JWT Token}`
++ Path Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| boardId   | 게시글 ID      |
+| commentId | 댓글  ID      |
++ Request Body
+```json
+{
+  "content": "string"
+}
+```
+
++ Request Fields
+
+| Path    | Type   | Required | Description |
+|---------|--------|----------|-------------|
+| content | String | true     | 댓글 내용       |
+
+**[Response]**
+
++ Response
+
+```json
+{
+  "code": 200,
+  "message": "OK",
+  "data": {
+    "id": 1,
+    "content": "string",
+    "createdDate": "2025-02-15T00:02:42.261Z"
+  }
+}
+```
+
++ Response Fields
+
+| Path            | Type   | Description |
+|-----------------|--------|-------------|
+| code            | Number | 응답 코드       |
+| message         | String | 응답 메세지      |
+| data.id         | Number | 댓글 ID       |
+| data.content    | String | 댓글 내용       |
+| data.createDate | String | 댓글 생성일시     |
+
+### 댓글 삭제
+
+**[Description]**  
+선택한 게시글의 댓글을 삭제한다.
+
+**[Request]**
+
++ URL : `/api/v1/boards/{boardId}/comments/{commentId}`
++ Method : `PUT`
++ Header : `Authorization : Bearer {JWT Token}`
++ Path Parameters
+
+| Parameter | Description |
+|-----------|-------------|
+| boardId   | 게시글 ID      |
+| commentId | 댓글  ID      |
+
+
+**[Response]**
+
++ Response
+
+```json
+{
+  "code": 200,
+  "message": "OK"
+}
+```
+
++ Response Fields
+
+| Path            | Type   | Description |
+|-----------------|--------|-------------|
+| code            | Number | 응답 코드       |
+| message         | String | 응답 메세지      |
