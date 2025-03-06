@@ -58,6 +58,10 @@ public class User extends BaseEntity {
         return UserRole.ADMIN.equals(role);
     }
 
+    public boolean isNotAdmin() {
+        return !isAdmin();
+    }
+
     private void validationUsername(String username) {
         if (username.length() < USERNAME_MIN_LENGTH) {
             throw new IllegalArgumentException("유저명은 최소 4자 이상이여야 합니다.");
