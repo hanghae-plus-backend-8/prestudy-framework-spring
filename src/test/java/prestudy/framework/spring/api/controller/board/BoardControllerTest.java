@@ -109,7 +109,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("제목은 필수 값 입니다."));
     }
@@ -131,7 +131,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("내용은 필수 값 입니다."));
     }
@@ -153,7 +153,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("작성자는 필수 값 입니다."));
     }
@@ -175,7 +175,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호는 필수 값 입니다."));
     }
@@ -220,7 +220,7 @@ class BoardControllerTest extends ControllerTestSupport {
                 get("/api/v1/boards/{id}", -1L)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
     }
@@ -243,7 +243,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호는 필수 값 입니다."));
     }
@@ -269,7 +269,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
     }
@@ -295,7 +295,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호가 일치하지 않습니다."));
     }
@@ -357,7 +357,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
     }
@@ -381,7 +381,7 @@ class BoardControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호가 일치하지 않습니다."));
     }
@@ -396,7 +396,7 @@ class BoardControllerTest extends ControllerTestSupport {
 
         // when & then
         mockMvc.perform(
-                put("/api/v1/boards/{id}", 1L)
+                delete("/api/v1/boards/{id}", 1L)
                     .content(objectMapper.writeValueAsString(request))
                     .contentType(MediaType.APPLICATION_JSON)
             )

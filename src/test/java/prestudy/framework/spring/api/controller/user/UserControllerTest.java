@@ -33,7 +33,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("유저명은 필수 값 입니다."));
     }
@@ -53,7 +53,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호는 필수 값 입니다."));
     }
@@ -78,7 +78,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("이미 존재하는 유저명입니다."));
     }
@@ -119,7 +119,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("유저명은 필수 값 입니다."));
     }
@@ -139,7 +139,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호는 필수 값 입니다."));
     }
@@ -163,7 +163,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("존재하지 않는 유저명입니다."));
     }
@@ -187,7 +187,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("패스워드가 일치하지 않습니다."));
     }
