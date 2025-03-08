@@ -12,6 +12,11 @@ spring:
     hibernate:
       ddl-auto: none
 
+jwt:
+  provider:
+    secret-key: a4e4706039b85a6b28efb09f276729c630d1673dc099562faf7ae551b48214f94a2082c86e25c4398ec7c47e65f0096e067e08f6658c2cdae4bae1d29a27f072f26e04dba7c4b54ccd970e3c50664ee39e94ae6e29e303ee3c2c4f795adde065e4e2fc3262879cb5cb09f4a9cbf2301dece81da9b060aa9daf8829cbf100634f
+    access-token-expiration: 600
+
 ---
 spring:
   config:
