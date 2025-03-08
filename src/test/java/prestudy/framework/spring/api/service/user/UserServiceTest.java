@@ -51,7 +51,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // when & then
         assertThatThrownBy(() -> userService.createUser(createCommand))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("이미 존재하는 유저명입니다.");
+            .hasMessage("중복된 username 입니다.");
     }
 
     @DisplayName("유저를 생성한다.")
@@ -88,7 +88,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // when & then
         assertThatThrownBy(() -> userService.loginUser(loginCommand))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("존재하지 않는 유저명입니다.");
+            .hasMessage("회원을 찾을 수 없습니다.");
     }
 
     @DisplayName("패스워드가 일치하지 않으면 로그인하지 못한다.")
@@ -108,7 +108,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // when & then
         assertThatThrownBy(() -> userService.loginUser(loginCommand))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("패스워드가 일치하지 않습니다.");
+            .hasMessage("회원을 찾을 수 없습니다.");
     }
 
     @DisplayName("로그인이 성공하면 JWT를 반환한다.")
