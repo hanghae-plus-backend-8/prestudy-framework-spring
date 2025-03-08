@@ -409,15 +409,14 @@
 
 **[Request]**
 
-+ URL : `/api/v1/boards/{boardId}/comments/{commentId}`
++ URL : `/api/v1/comments/{id}`
 + Method : `PUT`
 + Header : `Authorization : Bearer {JWT Token}`
 + Path Parameters
 
 | Parameter | Description |
 |-----------|-------------|
-| boardId   | 게시글 ID      |
-| commentId | 댓글  ID      |
+| id        | 댓글  ID      |
 + Request Body
 ```json
 {
@@ -464,15 +463,14 @@
 
 **[Request]**
 
-+ URL : `/api/v1/boards/{boardId}/comments/{commentId}`
-+ Method : `PUT`
++ URL : `/api/v1/comments/{id}`
++ Method : `DELETE`
 + Header : `Authorization : Bearer {JWT Token}`
 + Path Parameters
 
 | Parameter | Description |
 |-----------|-------------|
-| boardId   | 게시글 ID      |
-| commentId | 댓글  ID      |
+| id        | 댓글  ID      |
 
 
 **[Response]**

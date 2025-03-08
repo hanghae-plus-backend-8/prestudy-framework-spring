@@ -7,9 +7,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import prestudy.framework.spring.api.controller.board.BoardController;
+import prestudy.framework.spring.api.controller.comment.CommentController;
 import prestudy.framework.spring.api.controller.user.UserController;
 import prestudy.framework.spring.api.jwt.JwtInterceptor;
 import prestudy.framework.spring.api.service.board.BoardService;
+import prestudy.framework.spring.api.service.comment.CommentService;
 import prestudy.framework.spring.api.service.user.UserService;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -17,7 +19,8 @@ import static org.mockito.BDDMockito.given;
 
 @WebMvcTest(controllers = {
     BoardController.class,
-    UserController.class
+    UserController.class,
+    CommentController.class
 })
 public abstract class ControllerTestSupport {
 
@@ -32,6 +35,9 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected UserService userService;
+
+    @MockitoBean
+    protected CommentService commentService;
 
     @MockitoBean
     protected JwtInterceptor jwtInterceptor;
