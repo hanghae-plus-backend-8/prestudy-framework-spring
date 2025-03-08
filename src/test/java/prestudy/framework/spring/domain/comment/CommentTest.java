@@ -3,6 +3,8 @@ package prestudy.framework.spring.domain.comment;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.user.User;
@@ -22,8 +24,13 @@ class CommentTest extends IntegrationTestSupport {
     }
 
     @DisplayName("댓글 내용을 수정한다.")
-    @Test
-    void updateContent() {
+    @ParameterizedTest
+    @CsvSource({
+        "댓글 변경, 댓글 변경",
+        ", 댓글 내용",
+        "'', 댓글 내용"
+    })
+    void updateContent(String updatedContent, String expectedContent) {
         // given
         User user = User.ofUser("123abc", "Password12!");
         Board board = Board.builder()
@@ -34,16 +41,16 @@ class CommentTest extends IntegrationTestSupport {
             .build();
 
         Comment comment = Comment.builder()
-            .content("내용")
+            .content("댓글 내용")
             .user(user)
             .board(board)
             .build();
 
         // when
-        comment.updateContent("댓글 변경");
+        comment.updateContent(updatedContent);
 
         // then
-        assertThat(comment.getContent()).isEqualTo("댓글 변경");
+        assertThat(comment.getContent()).isEqualTo(expectedContent);
     }
 
     @DisplayName("사용자는 댓글 작성자이다.")
