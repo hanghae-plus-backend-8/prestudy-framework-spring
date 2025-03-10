@@ -1,9 +1,9 @@
 package com.hhplus.precourse.user.service;
 
+import com.hhplus.precourse.common.component.JwtTokenManager;
 import com.hhplus.precourse.common.exception.BadRequestException;
 import com.hhplus.precourse.common.exception.NotFoundException;
 import com.hhplus.precourse.user.repository.UserRepository;
-import com.hhplus.precourse.common.component.JwtTokenManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

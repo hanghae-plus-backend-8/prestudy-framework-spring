@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.time.LocalDateTime;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.hhplus.precourse.common.ApiDocumentUtils.*;
+import static com.hhplus.precourse.common.TestUserDetailsConfig.USER_DETAILS_BEAN_NAME;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -24,15 +26,16 @@ class UpdatePostControllerTest extends ControllerTestContext {
     @MockBean
     private UpdatePostService service;
 
+    @WithUserDetails(userDetailsServiceBeanName = USER_DETAILS_BEAN_NAME)
     @Test
     void success() {
         BDDMockito.given(service.update(any()))
             .willReturn(new PostVo(
                 1L,
+                1L,
                 "작성자명",
                 "제목",
                 "내용",
-                "비밀번호",
                 LocalDateTime.now(),
                 LocalDateTime.now()
             ));
@@ -40,11 +43,11 @@ class UpdatePostControllerTest extends ControllerTestContext {
         var body = new CreatePostController.Request(
             "수정할 작성자명",
             "수정할 제목",
-            "수정할 내용",
-            "비밀번호"
+            "수정할 내용"
         );
 
         given()
+            .header(authorizationHeader())
             .body(body)
             .when()
             .put("/posts/{id}", "1")
@@ -58,11 +61,11 @@ class UpdatePostControllerTest extends ControllerTestContext {
                         .description(DESCRIPTION),
                     preprocessRequest(),
                     preprocessResponse(),
+                    requestHeaderWithAuthorization(),
                     requestFields(
                         fieldWithPath("author").type(STRING).description("수정할 작성자명"),
                         fieldWithPath("title").type(STRING).description("수정할 제목"),
-                        fieldWithPath("content").type(STRING).description("수정할 내용"),
-                        fieldWithPath("password").type(STRING).description("비밀번호")
+                        fieldWithPath("content").type(STRING).description("수정할 내용")
                     ),
                     responseFields(
                         fieldsWithBasic(

@@ -30,10 +30,10 @@ class CreatePostServiceTest {
     void success() {
         // given
         var command = new CreatePostService.Command(
+            1L,
             "작성자명",
             "제목",
-            "내용",
-            "비밀번호"
+            "내용"
         );
         given(postRepository.save(any()))
             .willReturn(new PostFixture().build());
@@ -49,6 +49,5 @@ class CreatePostServiceTest {
         assertThat(captured.author()).isEqualTo(command.author());
         assertThat(captured.title()).isEqualTo(command.title());
         assertThat(captured.content()).isEqualTo(command.content());
-        assertThat(captured.password()).isEqualTo(command.password());
     }
 }

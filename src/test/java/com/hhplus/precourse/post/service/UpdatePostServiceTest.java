@@ -1,25 +1,21 @@
 package com.hhplus.precourse.post.service;
 
-import com.hhplus.precourse.common.exception.NotFoundException;
-import com.hhplus.precourse.common.support.ApplicationStatus;
-import com.hhplus.precourse.post.domain.Post;
-import com.hhplus.precourse.post.domain.PostFixture;
-import com.hhplus.precourse.post.repository.PostRepository;
-import org.assertj.core.api.Assertions;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
+import static org.mockito.BDDMockito.given;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
+import com.hhplus.precourse.common.exception.BadRequestException;
+import com.hhplus.precourse.common.exception.NotFoundException;
 import static com.hhplus.precourse.common.support.ApplicationStatus.POST_NOT_FOUND;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
+import com.hhplus.precourse.post.domain.PostFixture;
+import com.hhplus.precourse.post.repository.PostRepository;
 
 @ExtendWith(MockitoExtension.class)
 class UpdatePostServiceTest {
@@ -34,10 +30,10 @@ class UpdatePostServiceTest {
         var post = new PostFixture().build();
         var command = new UpdatePostService.Command(
             post.id(),
+            1L,
             "수정된 작성자명",
             "수정된 제목",
-            "수정된 내용",
-            post.password()
+            "수정된 내용"
         );
         given(postRepository.findById(command.id()))
             .willReturn(Optional.of(post));
@@ -50,7 +46,6 @@ class UpdatePostServiceTest {
         assertThat(result.author()).isEqualTo(command.author());
         assertThat(result.title()).isEqualTo(command.title());
         assertThat(result.content()).isEqualTo(command.content());
-        assertThat(result.password()).isEqualTo(command.password());
     }
 
     @Test
@@ -59,10 +54,10 @@ class UpdatePostServiceTest {
         var post = new PostFixture().build();
         var command = new UpdatePostService.Command(
             post.id() + 1,
+            post.userId(),
             "수정된 작성자명",
             "수정된 제목",
-            "수정된 내용",
-            post.password()
+            "수정된 내용"
         );
         given(postRepository.findById(command.id()))
             .willReturn(java.util.Optional.empty());
@@ -74,4 +69,27 @@ class UpdatePostServiceTest {
         assertThat(throwable).isInstanceOf(NotFoundException.class)
             .hasMessage(POST_NOT_FOUND.message());
     }
+
+    @Test
+    void unauthorized() {
+        // given
+        var post = new PostFixture().build();
+        var command = new UpdatePostService.Command(
+            post.id(),
+            post.userId() + 1,
+            "수정된 작성자명",
+            "수정된 제목",
+            "수정된 내용"
+        );
+        given(postRepository.findById(command.id()))
+            .willReturn(Optional.of(post));
+
+        // when
+        var throwable = catchThrowable(() -> service.update(command));
+
+        // then
+        assertThat(throwable).isInstanceOf(BadRequestException.class)
+            .hasMessage("작성자만 수정할 수 있습니다.");
+    }
+    
 }

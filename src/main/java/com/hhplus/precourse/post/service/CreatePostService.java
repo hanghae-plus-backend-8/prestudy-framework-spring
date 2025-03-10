@@ -22,18 +22,18 @@ public class CreatePostService {
 
     private Post createPost(Command command) {
         return new Post(
+            command.userId(),
             command.author(),
             command.title(),
-            command.content(),
-            command.password()
+            command.content()
         );
     }
 
     public record Command(
+        long userId,
         String author,
         String title,
-        String content,
-        String password
+        String content
     ) {
     }
 }

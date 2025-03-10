@@ -7,11 +7,7 @@ import com.hhplus.precourse.common.exception.DomainException;
 import com.hhplus.precourse.common.support.Status;
 import static com.hhplus.precourse.user.domain.User.ExceptionStatus.INVALID_PARAMETER;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,13 +23,19 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     public User(String name,
                 String password) {
         this.name = name;
         this.password = password;
+        this.role = RoleType.USER;
         validateValues();
     }
 
@@ -76,6 +78,10 @@ public class User extends BaseEntity {
 
     public boolean notMatchPassword(String password) {
         return !matchPassword(password);
+    }
+
+    public enum RoleType {
+        ADMIN, USER
     }
 
     @Getter

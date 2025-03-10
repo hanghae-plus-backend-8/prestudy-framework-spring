@@ -25,7 +25,7 @@ public class UserIntegrationTest extends IntegrationTest {
     void signUp() throws Exception {
         var request = new CreateUserController.Request(
             "test1234",
-            "testPassword"
+            "testPassword1*"
         );
 
         mockMvc.perform(

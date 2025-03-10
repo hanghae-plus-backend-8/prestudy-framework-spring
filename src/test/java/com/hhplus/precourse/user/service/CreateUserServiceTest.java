@@ -28,7 +28,7 @@ class CreateUserServiceTest {
         // given
         var command = new CreateUserService.Command(
             "test1234",
-            "password123"
+            "password123*"
         );
         given(userRepository.existsByName(command.name())).willReturn(false);
 

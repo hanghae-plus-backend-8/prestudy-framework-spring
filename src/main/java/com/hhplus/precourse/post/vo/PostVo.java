@@ -6,20 +6,20 @@ import java.time.LocalDateTime;
 
 public record PostVo(
     long id,
+    long userId,
     String author,
     String title,
     String content,
-    String password,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ) {
     public static PostVo from(Post post) {
         return new PostVo(
             post.id(),
+            post.userId(),
             post.author(),
             post.title(),
             post.content(),
-            post.password(),
             post.createdAt(),
             post.updatedAt()
         );

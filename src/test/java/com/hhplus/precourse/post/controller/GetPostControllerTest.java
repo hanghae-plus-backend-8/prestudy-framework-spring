@@ -36,10 +36,10 @@ class GetPostControllerTest extends ControllerTestContext {
         BDDMockito.given(service.get(anyLong()))
             .willReturn(new PostVo(
                 1L,
+                1L,
                 "작성자명",
                 "제목",
                 "내용",
-                "비밀번호",
                 LocalDateTime.now(),
                 LocalDateTime.now()
             ));

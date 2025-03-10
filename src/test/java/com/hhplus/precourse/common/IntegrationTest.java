@@ -10,7 +10,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 
 @Tag("integration")
@@ -18,17 +18,17 @@ import org.testcontainers.containers.MySQLContainer;
 @ActiveProfiles("integration-test")
 @AutoConfigureMockMvc
 @Transactional
-@Import(MySQLTestContainerConfig.class)
+@Import({PostgreSQLTestContainerConfig.class, TestUserDetailsConfig.class})
 public class IntegrationTest {
-    static MySQLContainer<?> mysqlContainer = MySQLTestContainerConfig.getContainer();
+    static PostgreSQLContainer<?> postgreContainer = PostgreSQLTestContainerConfig.getContainer();
 
     @Autowired
     protected MockMvc mockMvc;
 
     @DynamicPropertySource
     static void setDatasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mysqlContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", mysqlContainer::getUsername);
-        registry.add("spring.datasource.password", mysqlContainer::getPassword);
+        registry.add("spring.datasource.url", postgreContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreContainer::getUsername);
+        registry.add("spring.datasource.password", postgreContainer::getPassword);
     }
 }

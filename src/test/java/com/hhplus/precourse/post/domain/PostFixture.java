@@ -11,9 +11,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class PostFixture implements TestFixture<Post> {
     private long id = 1L;
+    private long userId = 1L;
     private String author = "testAuthor";
     private String title = "testTitle";
-    private String password = "testPassword";
     private String content = "testContent";
 
     @Override

@@ -1,11 +1,13 @@
 package com.hhplus.precourse.post.controller;
 
+import com.hhplus.precourse.auth.AuthenticatedUser;
 import com.hhplus.precourse.common.web.ApiResponse;
 import com.hhplus.precourse.post.service.UpdatePostService;
 import com.hhplus.precourse.post.vo.PostVo;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,8 +22,9 @@ public class UpdatePostController {
 
     @PutMapping("/posts/{id}")
     ApiResponse<Response> update(@PathVariable Long id,
-                                 @Valid @RequestBody Request request) {
-        var command = request.toCommand(id);
+                                 @Valid @RequestBody Request request,
+                                 @AuthenticationPrincipal AuthenticatedUser user) {
+        var command = request.toCommand(id, user.id());
         var postVo = service.update(command);
 
         return ApiResponse.success(
@@ -36,17 +39,15 @@ public class UpdatePostController {
         @NotBlank(message = "제목은 필수 값입니다.")
         String title,
         @NotBlank(message = "내용은 필수 값입니다.")
-        String content,
-        @NotBlank(message = "비밀번호는 필수 값입니다.")
-        String password
+        String content
     ) {
-        public UpdatePostService.Command toCommand(Long id) {
+        public UpdatePostService.Command toCommand(long id, long userId) {
             return new UpdatePostService.Command(
                 id,
+                userId,
                 author,
                 title,
-                content,
-                password
+                content
             );
         }
     }

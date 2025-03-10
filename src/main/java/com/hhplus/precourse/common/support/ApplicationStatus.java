@@ -2,6 +2,7 @@ package com.hhplus.precourse.common.support;
 
 public enum ApplicationStatus implements Status {
     INVALID_PARAMETER("잘못된 요청입니다."),
+    UNAUTHORIZED("권한이 부족합니다."),
 
     // user
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),

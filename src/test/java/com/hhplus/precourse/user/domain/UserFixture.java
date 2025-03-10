@@ -13,8 +13,9 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class UserFixture implements TestFixture<User> {
     private long id = 1L;
-    private String name = "test1234!";
-    private String password = "testPassword";
+    private String name = "testUser99";
+    private String password = "test1234!";
+    private User.RoleType role = User.RoleType.USER;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 
@@ -24,5 +25,18 @@ public class UserFixture implements TestFixture<User> {
         var entity = new User();
         FixtureReflectionUtils.reflect(entity, this);
         return entity;
+    }
+
+    public static User normalUser() {
+        return new UserFixture().build();
+    }
+
+    public static User adminUser() {
+        return new UserFixture()
+            .setId(2L)
+            .setName("testAdmin1")
+            .setPassword("adminPassword12*")
+            .setRole(User.RoleType.ADMIN)
+            .build();
     }
 }

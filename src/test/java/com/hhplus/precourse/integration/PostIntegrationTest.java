@@ -1,34 +1,58 @@
 package com.hhplus.precourse.integration;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import com.hhplus.precourse.common.IntegrationTest;
-import com.hhplus.precourse.common.support.utils.JsonUtils;
-import com.hhplus.precourse.post.controller.CreatePostController;
-import com.hhplus.precourse.post.controller.UpdatePostController;
-import com.hhplus.precourse.post.domain.PostFixture;
-import com.hhplus.precourse.post.repository.PostRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.hhplus.precourse.common.IntegrationTest;
+import com.hhplus.precourse.common.component.JwtTokenManager;
+import com.hhplus.precourse.common.support.utils.JsonUtils;
+import com.hhplus.precourse.post.controller.CreatePostController;
+import com.hhplus.precourse.post.controller.UpdatePostController;
+import com.hhplus.precourse.post.domain.Post;
+import com.hhplus.precourse.post.domain.PostFixture;
+import com.hhplus.precourse.post.repository.PostRepository;
+import com.hhplus.precourse.user.domain.UserFixture;
+import com.hhplus.precourse.user.repository.UserRepository;
 
 public class PostIntegrationTest extends IntegrationTest {
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private JwtTokenManager jwtTokenManager;
+    private String jwtToken;
+    private Post savedPost;
+
+    @BeforeEach
+    void setUp() {
+        var user = new UserFixture().build();
+        var savedPostUser = userRepository.save(user);
+        var post = new PostFixture().setUserId(savedPostUser.id()).build();
+        this.savedPost = postRepository.save(post);
+        this.jwtToken = jwtTokenManager.issue(savedPostUser.id(), savedPostUser.name());
+    }
 
     @DisplayName("게시글 목록 조회")
     @Test
     void getPostList() throws Exception {
-        var saved = postRepository.save(new PostFixture().build());
-
         mockMvc.perform(get("/posts"))
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isArray())
-            .andExpect(jsonPath("$.data[0].id").value(saved.id()))
-            .andExpect(jsonPath("$.data[0].title").value(saved.title()))
-            .andExpect(jsonPath("$.data[0].author").value(saved.author()))
-            .andExpect(jsonPath("$.data[0].content").value(saved.content()))
+            .andExpect(jsonPath("$.data[0].id").value(savedPost.id()))
+            .andExpect(jsonPath("$.data[0].title").value(savedPost.title()))
+            .andExpect(jsonPath("$.data[0].author").value(savedPost.author()))
+            .andExpect(jsonPath("$.data[0].content").value(savedPost.content()))
             .andExpect(jsonPath("$.data[0].createdAt").exists())
             .andExpect(jsonPath("$.data[0].updatedAt").exists());
     }
@@ -36,15 +60,14 @@ public class PostIntegrationTest extends IntegrationTest {
     @DisplayName("게시글 상세 조회")
     @Test
     void getPost() throws Exception {
-        var saved = postRepository.save(new PostFixture().build());
-
-        mockMvc.perform(get("/posts/{id}", saved.id()))
+        mockMvc.perform(get("/posts/{id}", savedPost.id()))
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isMap())
-            .andExpect(jsonPath("$.data.id").value(saved.id()))
-            .andExpect(jsonPath("$.data.title").value(saved.title()))
-            .andExpect(jsonPath("$.data.author").value(saved.author()))
-            .andExpect(jsonPath("$.data.content").value(saved.content()))
+            .andExpect(jsonPath("$.data.id").value(savedPost.id()))
+            .andExpect(jsonPath("$.data.title").value(savedPost.title()))
+            .andExpect(jsonPath("$.data.author").value(savedPost.author()))
+            .andExpect(jsonPath("$.data.content").value(savedPost.content()))
             .andExpect(jsonPath("$.data.createdAt").exists())
             .andExpect(jsonPath("$.data.updatedAt").exists());
     }
@@ -55,15 +78,16 @@ public class PostIntegrationTest extends IntegrationTest {
         var request = new CreatePostController.Request(
             "testAuthor",
             "testTitle",
-            "testContent",
-            "testPassword"
+            "testContent"
         );
 
         mockMvc.perform(
                 post("/posts")
                     .contentType("application/json")
+                    .header("Authorization", "Bearer " + jwtToken)
                     .content(JsonUtils.stringify(request))
             )
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isMap())
             .andExpect(jsonPath("$.data.id").isNumber())
@@ -77,19 +101,19 @@ public class PostIntegrationTest extends IntegrationTest {
     @DisplayName("게시글 수정")
     @Test
     void updatePost() throws Exception {
-        var saved = postRepository.save(new PostFixture().build());
         var request = new UpdatePostController.Request(
             "changedAuthor",
             "changedTitle",
-            "changedContent",
-            saved.password()
+            "changedContent"
         );
 
         mockMvc.perform(
-                put("/posts/{id}", saved.id())
+                put("/posts/{id}", savedPost.id())
                     .contentType("application/json")
+                    .header("Authorization", "Bearer " + jwtToken)
                     .content(JsonUtils.stringify(request))
             )
+            .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").isMap())
             .andExpect(jsonPath("$.data.id").isNumber())
@@ -103,12 +127,11 @@ public class PostIntegrationTest extends IntegrationTest {
     @DisplayName("게시글 삭제")
     @Test
     void deletePost() throws Exception {
-        var saved = postRepository.save(new PostFixture().build());
-
         mockMvc.perform(
-            delete("/posts/{id}", saved.id())
-                .queryParam("password", saved.password())
+                delete("/posts/{id}", savedPost.id())
+                    .header("Authorization", "Bearer " + jwtToken)
             )
+            .andDo(print())
             .andExpect(status().isOk());
     }
 }
