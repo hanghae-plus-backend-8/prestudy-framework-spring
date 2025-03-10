@@ -16,7 +16,7 @@ spring:
     hikari:
       schema: 'test'
 
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type: TRACE
+application:
+  jwt:
+    secret: 'test-IreS4OmMJMiwHIu4sCZTqKSeo/AGjVe6SyN7Wo='
+    expiration: 86400000

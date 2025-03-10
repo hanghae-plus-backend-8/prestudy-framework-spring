@@ -26,7 +26,7 @@ public class CreatePostController {
         );
     }
 
-    record Request(
+    public record Request(
         @NotBlank(message = "작성자명은 필수 값입니다.")
         String author,
         @NotBlank(message = "제목은 필수 값입니다.")
