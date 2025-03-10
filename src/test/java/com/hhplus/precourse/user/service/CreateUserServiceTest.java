@@ -58,6 +58,6 @@ class CreateUserServiceTest {
 
         // then
         assertThat(throwable).isInstanceOf(BadRequestException.class)
-            .hasMessageContaining(ALREADY_EXIST_USER.message());
+            .hasMessageContaining("중복된 username 입니다.");
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class SecurityIntegrationTest extends IntegrationTest {
@@ -54,7 +55,8 @@ public class SecurityIntegrationTest extends IntegrationTest {
                 get(TEST_ENDPOINT)
             )
             .andDo(print())
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.message").value("토큰이 유효하지 않습니다."));
     }
 
     @Test
@@ -67,7 +69,8 @@ public class SecurityIntegrationTest extends IntegrationTest {
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + invalidToken)
             )
             .andDo(print())
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.message").value("토큰이 유효하지 않습니다."));
     }
     
     @Test
@@ -78,7 +81,8 @@ public class SecurityIntegrationTest extends IntegrationTest {
                     .header(HttpHeaders.AUTHORIZATION, jwtToken)
             )
             .andDo(print())
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.message").value("토큰이 유효하지 않습니다."));
     }
     
     @Test
@@ -91,7 +95,8 @@ public class SecurityIntegrationTest extends IntegrationTest {
                     .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
             )
             .andDo(print())
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isUnauthorized())
+            .andExpect(jsonPath("$.message").value("토큰이 유효하지 않습니다."));
     }
     
     @Test

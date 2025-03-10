@@ -84,6 +84,6 @@ class LoginServiceTest {
 
         // then
         assertThat(throwable).isInstanceOf(BadRequestException.class)
-            .hasMessage(ApplicationStatus.MISMATCH_PASSWORD.message());
+            .hasMessage(ApplicationStatus.USER_NOT_FOUND.message());
     }
 } 

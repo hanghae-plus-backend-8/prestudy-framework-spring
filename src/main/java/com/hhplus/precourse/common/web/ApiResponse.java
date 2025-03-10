@@ -137,7 +137,7 @@ public record ApiResponse<T>(
         SUCCESS("성공"),
         FAILURE( "요청에 실패하였습니다."),
         ERROR( "에러가 발생하였습니다."),
-        UNAUTHORIZED("인증되지 않은 사용자입니다."),
+        UNAUTHORIZED("토큰이 유효하지 않습니다."),
         FORBIDDEN("권한이 없습니다."),
         NOT_FOUND("해당 리소스는 존재하지 않습니다.");
 

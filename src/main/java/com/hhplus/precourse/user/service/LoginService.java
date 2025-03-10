@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.hhplus.precourse.common.support.ApplicationStatus.MISMATCH_PASSWORD;
 import static com.hhplus.precourse.common.support.ApplicationStatus.USER_NOT_FOUND;
 
 @Service
@@ -24,7 +23,7 @@ public class LoginService {
                 .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
 
         if (user.notMatchPassword(command.password())) {
-            throw new BadRequestException(MISMATCH_PASSWORD);
+            throw new BadRequestException(USER_NOT_FOUND);
         }
 
         return jwtTokenManager.issue(user.id(), user.name());

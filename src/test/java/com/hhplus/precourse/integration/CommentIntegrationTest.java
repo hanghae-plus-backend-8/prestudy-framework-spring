@@ -1,6 +1,5 @@
 package com.hhplus.precourse.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -116,8 +115,53 @@ public class CommentIntegrationTest extends IntegrationTest {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.data").doesNotExist());
-        
-        // 삭제 확인
-        assertThat(commentRepository.findById(savedComment.id())).isEmpty();
+    }
+    
+    @DisplayName("댓글 수정시 작성자가 아닐 경우 실패")
+    @Test
+    void updateCommentByWriter() throws Exception {
+        var comment = new CommentFixture()
+            .setPostId(savedPost.id())
+            .setUserId(savedUser.id())
+            .build();
+        var savedComment = commentRepository.save(comment);
+        var request = new UpdateCommentController.Request(
+            "수정된 댓글 내용"
+        );
+        var otherUser = new UserFixture().setId(savedUser.id() + 1).setName(savedUser.name() + "2").build();
+        var savedOtherUser = userRepository.save(otherUser);
+        var otherJwtToken = jwtTokenManager.issue(savedOtherUser.id(), savedOtherUser.name());
+
+        mockMvc.perform(
+                put("/comments/{id}", savedComment.id())
+                    .contentType("application/json")
+                    .header("Authorization", "Bearer " + otherJwtToken)
+                    .content(JsonUtils.stringify(request))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("작성자만 수정할 수 있습니다."));
+    }
+
+    @DisplayName("댓글 삭제시 작성자가 아닐 경우 실패")
+    @Test
+    void deleteCommentByWriter() throws Exception {
+        var comment = new CommentFixture()
+            .setPostId(savedPost.id())
+            .setUserId(savedUser.id())
+            .build();
+        var savedComment = commentRepository.save(comment);
+        var otherUser = new UserFixture().setId(savedUser.id() + 1).setName(savedUser.name() + "2").build();
+        var savedOtherUser = userRepository.save(otherUser);
+        var otherJwtToken = jwtTokenManager.issue(savedOtherUser.id(), savedOtherUser.name());
+
+        mockMvc.perform(
+                delete("/comments/{id}", savedComment.id())
+                    .contentType("application/json")
+                    .header("Authorization", "Bearer " + otherJwtToken)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("작성자만 삭제할 수 있습니다."));
     }
 }

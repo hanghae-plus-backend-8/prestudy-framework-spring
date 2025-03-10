@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 
-import static com.hhplus.precourse.common.support.ApplicationStatus.MISMATCH_PASSWORD;
 import static com.hhplus.precourse.common.support.ApplicationStatus.USER_NOT_FOUND;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -35,6 +34,25 @@ public class UserIntegrationTest extends IntegrationTest {
             )
             .andExpect(status().isOk());
     }
+
+    @DisplayName("이미 존재하는 사용자로 회원 가입 시도")
+    @Test
+    void signUpWithExistentUser() throws Exception {
+        var user = userRepository.save(new UserFixture().build());
+        var request = new CreateUserController.Request(
+            user.name(),
+            "testPassword1*"
+        );
+
+        mockMvc.perform(
+                post("/users/sign-up")
+                    .contentType("application/json")
+                    .content(JsonUtils.stringify(request))
+            )
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("중복된 username 입니다."));
+    }
+
 
     @DisplayName("로그인")
     @Test
@@ -69,7 +87,7 @@ public class UserIntegrationTest extends IntegrationTest {
                     .content(JsonUtils.stringify(loginRequest))
             )
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.message").value(MISMATCH_PASSWORD.message()));
+            .andExpect(jsonPath("$.message").value(USER_NOT_FOUND.message()));
     }
 
     @DisplayName("존재하지 않는 사용자로 로그인 시도")

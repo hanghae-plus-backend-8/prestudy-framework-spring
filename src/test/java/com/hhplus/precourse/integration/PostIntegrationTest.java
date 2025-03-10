@@ -20,6 +20,7 @@ import com.hhplus.precourse.post.controller.UpdatePostController;
 import com.hhplus.precourse.post.domain.Post;
 import com.hhplus.precourse.post.domain.PostFixture;
 import com.hhplus.precourse.post.repository.PostRepository;
+import com.hhplus.precourse.user.domain.User;
 import com.hhplus.precourse.user.domain.UserFixture;
 import com.hhplus.precourse.user.repository.UserRepository;
 
@@ -31,15 +32,16 @@ public class PostIntegrationTest extends IntegrationTest {
     @Autowired
     private JwtTokenManager jwtTokenManager;
     private String jwtToken;
+    private User savedUser;
     private Post savedPost;
 
     @BeforeEach
     void setUp() {
         var user = new UserFixture().build();
-        var savedPostUser = userRepository.save(user);
-        var post = new PostFixture().setUserId(savedPostUser.id()).build();
+        this.savedUser = userRepository.save(user);
+        var post = new PostFixture().setUserId(savedUser.id()).build();
         this.savedPost = postRepository.save(post);
-        this.jwtToken = jwtTokenManager.issue(savedPostUser.id(), savedPostUser.name());
+        this.jwtToken = jwtTokenManager.issue(savedUser.id(), savedUser.name());
     }
 
     @DisplayName("게시글 목록 조회")
@@ -124,6 +126,29 @@ public class PostIntegrationTest extends IntegrationTest {
             .andExpect(jsonPath("$.data.updatedAt").exists());
     }
 
+    @DisplayName("게시글 수정시 작성자가 아닐 경우 실패")
+    @Test
+    void updatePostByWriter() throws Exception {
+        var otherUser = new UserFixture().setId(savedUser.id() + 1).setName(savedUser.name() + "2").build();
+        var savedOtherUser = userRepository.save(otherUser);
+        var otherJwtToken = jwtTokenManager.issue(savedOtherUser.id(), savedOtherUser.name());
+        var request = new UpdatePostController.Request(
+            "changedAuthor",
+            "changedTitle",
+            "changedContent"
+        );
+
+        mockMvc.perform(
+                put("/posts/{id}", savedPost.id())
+                    .contentType("application/json")
+                    .header("Authorization", "Bearer " + otherJwtToken)
+                    .content(JsonUtils.stringify(request))
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("작성자만 수정할 수 있습니다."));
+    }
+
     @DisplayName("게시글 삭제")
     @Test
     void deletePost() throws Exception {
@@ -133,5 +158,21 @@ public class PostIntegrationTest extends IntegrationTest {
             )
             .andDo(print())
             .andExpect(status().isOk());
+    }
+
+    @DisplayName("게시글 삭제시 작성자가 아닐 경우 실패")
+    @Test
+    void deletePostByWriter() throws Exception {
+        var otherUser = new UserFixture().setId(savedUser.id() + 1).setName(savedUser.name() + "2").build();
+        var savedOtherUser = userRepository.save(otherUser);
+        var otherJwtToken = jwtTokenManager.issue(savedOtherUser.id(), savedOtherUser.name());
+
+        mockMvc.perform(
+                delete("/posts/{id}", savedPost.id())
+                    .header("Authorization", "Bearer " + otherJwtToken)
+            )
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("작성자만 삭제할 수 있습니다."));
     }
 }

@@ -17,7 +17,7 @@ public class CreateUserService {
     @Transactional
     public void create(Command command) {
         if (userRepository.existsByName(command.name())) {
-            throw new BadRequestException(ALREADY_EXIST_USER);
+            throw new BadRequestException(ALREADY_EXIST_USER, "중복된 username 입니다.");
         }
 
         var user = createUser(command);
