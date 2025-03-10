@@ -2,7 +2,9 @@ package com.hhplus.precourse.comment.component;
 
 import com.hhplus.precourse.comment.domain.Comment;
 import com.hhplus.precourse.comment.domain.CommentValidator;
+import com.hhplus.precourse.common.exception.BadRequestException;
 import com.hhplus.precourse.common.exception.NotFoundException;
+import com.hhplus.precourse.common.support.ApplicationStatus;
 import com.hhplus.precourse.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,5 +24,10 @@ public class CommentValidatorImpl implements CommentValidator {
         if (!postRepository.existsById(comment.postId())) {
             throw new NotFoundException(POST_NOT_FOUND);
         }
+    }
+
+    @Override
+    public void validateModification(Comment comment) {
+        comment.validateValues();
     }
 }

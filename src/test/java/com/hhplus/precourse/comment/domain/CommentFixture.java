@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 public class CommentFixture implements TestFixture<Comment> {
 
-    private Long id = 1L;
-    private Long postId = 1L;
-    private Long userId = 1L;
+    private long id = 1L;
+    private long postId = 1L;
+    private long userId = 1L;
     private String content = "테스트 댓글 내용";
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();

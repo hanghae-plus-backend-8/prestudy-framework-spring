@@ -1,10 +1,13 @@
 package com.hhplus.precourse.integration;
 
+import com.hhplus.precourse.comment.controller.UpdateCommentController;
+import com.hhplus.precourse.comment.domain.CommentFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -65,5 +68,32 @@ public class CommentIntegrationTest extends IntegrationTest {
             .andExpect(jsonPath("$.data.postId").value(savedPost.id()))
             .andExpect(jsonPath("$.data.userId").value(savedUser.id()))
             .andExpect(jsonPath("$.data.content").value("댓글 내용"));
+    }
+
+    @DisplayName("댓글 수정")
+    @Test
+    void updateComment() throws Exception {
+        var comment = new CommentFixture()
+            .setPostId(savedPost.id())
+            .setUserId(savedUser.id())
+            .build();
+        var savedComment = commentRepository.save(comment);
+        var request = new UpdateCommentController.Request(
+            "수정된 댓글 내용"
+        );
+
+        mockMvc.perform(
+                put("/comments/{id}", savedComment.id())
+                    .contentType("application/json")
+                    .header("Authorization", "Bearer " + jwtToken)
+                    .content(JsonUtils.stringify(request))
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data").isMap())
+            .andExpect(jsonPath("$.data.id").value(savedComment.id()))
+            .andExpect(jsonPath("$.data.postId").value(savedComment.postId()))
+            .andExpect(jsonPath("$.data.userId").value(savedComment.userId()))
+            .andExpect(jsonPath("$.data.content").value(request.content()));
     }
 }

@@ -65,9 +65,33 @@ class CommentTest {
         }
     }
 
+    @Nested
+    @DisplayName("댓글 수정 테스트")
+    class UpdateTest {
+        @Test
+        void success() {
+            // given
+            var comment = new CommentFixture()
+                .setContent("test-content")
+                .build();
+
+            // when
+            comment.update("updated-content");
+
+            // then
+            assertThat(comment.content()).isEqualTo("updated-content");
+        }
+    }
+    
+
     private static class TestValidator implements CommentValidator {
         @Override
         public void validateCreation(Comment comment) {
+            // ignore
+        }
+
+        @Override
+        public void validateModification(Comment comment) {
             // ignore
         }
     }

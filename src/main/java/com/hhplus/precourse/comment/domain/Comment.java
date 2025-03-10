@@ -1,15 +1,19 @@
 package com.hhplus.precourse.comment.domain;
 
+import static com.hhplus.precourse.comment.domain.Comment.CommentErrorStatus.INVALID_PARAMETER;
 import com.hhplus.precourse.common.entity.BaseEntity;
 import com.hhplus.precourse.common.exception.DomainException;
 import com.hhplus.precourse.common.support.Status;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-
-import static com.hhplus.precourse.comment.domain.Comment.CommentErrorStatus.INVALID_PARAMETER;
 
 @Entity
 @Table(name = "comments")
@@ -54,7 +58,11 @@ public class Comment extends BaseEntity {
 
     public void update(String content) {
         this.content = content;
-        validateContent();
+        validateValues();
+    }
+
+    public boolean isAuthor(long userId) {
+        return this.userId == userId;
     }
 
 
