@@ -15,7 +15,6 @@ public class AdminUserController {
     private final GetUserService service;
 
     @GetMapping("/admin/users/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     ApiResponse<UserVo> get(@PathVariable Long id) {
         return ApiResponse.success(
             service.get(id)

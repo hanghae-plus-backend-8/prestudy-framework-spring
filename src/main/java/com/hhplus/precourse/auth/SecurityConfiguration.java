@@ -2,6 +2,7 @@ package com.hhplus.precourse.auth;
 
 import com.hhplus.precourse.common.support.utils.JsonUtils;
 import com.hhplus.precourse.common.web.ApiResponse;
+import com.hhplus.precourse.user.domain.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -104,6 +105,7 @@ public class SecurityConfiguration {
             .requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+            .requestMatchers("admin/**").hasRole(User.RoleType.ADMIN.name())
             .anyRequest().authenticated();
     }
 

@@ -118,6 +118,7 @@ public class ControllerTestContext {
 
     protected enum Tags {
         POST("게시글"),
+        ADMIN_POST("[관리자] 게시글"),
         USER("사용자"),
         ADMIN_USER("[관리자] 사용자"),
         COMMENT("댓글")
