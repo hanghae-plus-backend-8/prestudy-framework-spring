@@ -121,7 +121,8 @@ public class ControllerTestContext {
         ADMIN_POST("[관리자] 게시글"),
         USER("사용자"),
         ADMIN_USER("[관리자] 사용자"),
-        COMMENT("댓글")
+        COMMENT("댓글"),
+        ADMIN_COMMENT("[관리자] 댓글")
         ;
 
         private final String tagName;
