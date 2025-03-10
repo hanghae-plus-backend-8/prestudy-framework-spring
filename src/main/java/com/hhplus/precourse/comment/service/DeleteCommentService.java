@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hhplus.precourse.comment.repository.CommentRepository;
-import com.hhplus.precourse.comment.vo.CommentVo;
 import com.hhplus.precourse.common.exception.BadRequestException;
 import com.hhplus.precourse.common.exception.NotFoundException;
 import static com.hhplus.precourse.common.support.ApplicationStatus.COMMENT_NOT_FOUND;
@@ -14,27 +13,18 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateCommentService {
+public class DeleteCommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public CommentVo update(Command command) {
-        var comment = commentRepository.findById(command.id())
+    public void delete(long id, long userId) {
+        var comment = commentRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(COMMENT_NOT_FOUND));
 
-        if (comment.isNotAuthor(command.userId())) {
-            throw new BadRequestException(UNAUTHORIZED, "작성자만 수정할 수 있습니다.");
+        if (comment.isNotAuthor(userId)) {
+            throw new BadRequestException(UNAUTHORIZED, "작성자만 삭제할 수 있습니다.");
         }
 
-        comment.update(command.content());
-
-        return CommentVo.from(comment);
-    }
-
-    public record Command(
-        long id,
-        long userId,
-        String content
-    ) {
+        commentRepository.delete(comment);
     }
 } 

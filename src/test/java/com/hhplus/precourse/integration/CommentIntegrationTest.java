@@ -1,11 +1,11 @@
 package com.hhplus.precourse.integration;
 
-import com.hhplus.precourse.comment.controller.UpdateCommentController;
-import com.hhplus.precourse.comment.domain.CommentFixture;
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -13,6 +13,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.hhplus.precourse.comment.controller.CreateCommentController;
+import com.hhplus.precourse.comment.controller.UpdateCommentController;
+import com.hhplus.precourse.comment.domain.CommentFixture;
 import com.hhplus.precourse.comment.repository.CommentRepository;
 import com.hhplus.precourse.common.IntegrationTest;
 import com.hhplus.precourse.common.component.JwtTokenManager;
@@ -95,5 +97,27 @@ public class CommentIntegrationTest extends IntegrationTest {
             .andExpect(jsonPath("$.data.postId").value(savedComment.postId()))
             .andExpect(jsonPath("$.data.userId").value(savedComment.userId()))
             .andExpect(jsonPath("$.data.content").value(request.content()));
+    }
+
+    @DisplayName("댓글 삭제")
+    @Test
+    void deleteComment() throws Exception {
+        var comment = new CommentFixture()
+            .setPostId(savedPost.id())
+            .setUserId(savedUser.id())
+            .build();
+        var savedComment = commentRepository.save(comment);
+
+        mockMvc.perform(
+                delete("/comments/{id}", savedComment.id())
+                    .contentType("application/json")
+                    .header("Authorization", "Bearer " + jwtToken)
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.data").doesNotExist());
+        
+        // 삭제 확인
+        assertThat(commentRepository.findById(savedComment.id())).isEmpty();
     }
 }

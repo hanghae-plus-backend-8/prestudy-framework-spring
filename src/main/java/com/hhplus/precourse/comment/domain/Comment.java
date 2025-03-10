@@ -65,6 +65,10 @@ public class Comment extends BaseEntity {
         return this.userId == userId;
     }
 
+    public boolean isNotAuthor(long userId) {
+        return !isAuthor(userId);
+    }
+
 
     enum CommentErrorStatus implements Status {
         INVALID_PARAMETER("잘못된 요청입니다.");
