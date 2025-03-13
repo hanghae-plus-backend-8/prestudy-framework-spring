@@ -205,7 +205,7 @@
 ```json
 {
   "title": "string",
-  "content": "string",
+  "content": "string"
 }
 ```
 + Request Fields
