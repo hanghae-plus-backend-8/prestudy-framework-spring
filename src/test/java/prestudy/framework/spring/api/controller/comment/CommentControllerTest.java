@@ -201,7 +201,7 @@ class CommentControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.data.createdDate").value("2025-02-07T12:00:00"));
     }
 
-    @DisplayName("댓글을 수정할 때 토큰이 유효해야 한다.")
+    @DisplayName("댓글을 삭제할 때 토큰이 유효해야 한다.")
     @Test
     void deleteCommentWithInvalidToken() throws Exception {
         // given
@@ -221,7 +221,7 @@ class CommentControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.message").value("토큰이 유효하지 않습니다."));
     }
 
-    @DisplayName("댓글을 수정할 때 권한이 있어야 한다.")
+    @DisplayName("댓글을 삭제할 때 권한이 있어야 한다.")
     @Test
     void deleteCommentWithoutPermission() throws Exception {
         // given

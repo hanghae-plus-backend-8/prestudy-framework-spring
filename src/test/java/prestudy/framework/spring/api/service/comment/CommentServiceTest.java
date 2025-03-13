@@ -4,9 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
-import prestudy.framework.spring.api.jwt.JwtRequestUtils;
 import prestudy.framework.spring.api.service.comment.command.CommentCreateCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentDeleteCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentUpdateCommand;
@@ -35,9 +33,6 @@ class CommentServiceTest extends IntegrationTestSupport {
 
     @Autowired
     private UserRepository userRepository;
-
-    @MockitoBean
-    protected JwtRequestUtils jwtRequestUtils;
 
     @AfterEach
     void tearDown() {
@@ -106,9 +101,9 @@ class CommentServiceTest extends IntegrationTestSupport {
     void createComment() {
         // given
         User user = User.ofUser("123abc", "Password12!");
-        Board board = createBoardEntity();
-
         userRepository.save(user);
+
+        Board board = createBoardEntity(user);
         boardRepository.save(board);
 
         given(jwtRequestUtils.getUserId()).willReturn(user.getId());
@@ -164,7 +159,6 @@ class CommentServiceTest extends IntegrationTestSupport {
     void updateCommentWithoutComment() {
         // given
         User user = User.ofUser("123abc", "Password12!");
-
         userRepository.save(user);
 
         given(jwtRequestUtils.getUserId()).willReturn(user.getId());
@@ -186,11 +180,10 @@ class CommentServiceTest extends IntegrationTestSupport {
         // given
         User commentUser = User.ofUser("123abc", "Password12!");
         User tokenUser = User.ofUser("123abcd", "Password12!");
-
-        Board board = createBoardEntity();
-
         userRepository.save(commentUser);
         userRepository.save(tokenUser);
+
+        Board board = createBoardEntity(commentUser);
         boardRepository.save(board);
 
         given(jwtRequestUtils.getUserId()).willReturn(tokenUser.getId());
@@ -220,11 +213,10 @@ class CommentServiceTest extends IntegrationTestSupport {
         // given
         User user = User.ofUser("123abc", "Password12!");
         User admin = User.ofAdmin("123abcd", "Password12!");
-
-        Board board = createBoardEntity();
-
         userRepository.save(user);
         userRepository.save(admin);
+
+        Board board = createBoardEntity(user);
         boardRepository.save(board);
 
         given(jwtRequestUtils.getUserId()).willReturn(admin.getId());
@@ -254,10 +246,9 @@ class CommentServiceTest extends IntegrationTestSupport {
     void updateComment() {
         // given
         User user = User.ofUser("123abc", "Password12!");
-
-        Board board = createBoardEntity();
-
         userRepository.save(user);
+
+        Board board = createBoardEntity(user);
         boardRepository.save(board);
 
         given(jwtRequestUtils.getUserId()).willReturn(user.getId());
@@ -334,11 +325,10 @@ class CommentServiceTest extends IntegrationTestSupport {
         // given
         User commentUser = User.ofUser("123abc", "Password12!");
         User tokenUser = User.ofUser("123abcd", "Password12!");
-
-        Board board = createBoardEntity();
-
         userRepository.save(commentUser);
         userRepository.save(tokenUser);
+
+        Board board = createBoardEntity(commentUser);
         boardRepository.save(board);
 
         given(jwtRequestUtils.getUserId()).willReturn(tokenUser.getId());
@@ -365,11 +355,11 @@ class CommentServiceTest extends IntegrationTestSupport {
         // given
         User user = User.ofUser("123abc", "Password12!");
         User admin = User.ofAdmin("123abcd", "Password12!");
-
-        Board board = createBoardEntity();
-
         userRepository.save(user);
         userRepository.save(admin);
+
+        Board board = createBoardEntity(user);
+
         boardRepository.save(board);
 
         given(jwtRequestUtils.getUserId()).willReturn(admin.getId());
@@ -397,10 +387,9 @@ class CommentServiceTest extends IntegrationTestSupport {
     void deleteComment() {
         // given
         User user = User.ofUser("123abc", "Password12!");
-
-        Board board = createBoardEntity();
-
         userRepository.save(user);
+
+        Board board = createBoardEntity(user);
         boardRepository.save(board);
 
         given(jwtRequestUtils.getUserId()).willReturn(user.getId());
@@ -423,12 +412,12 @@ class CommentServiceTest extends IntegrationTestSupport {
         assertThat(deleteComment).isNull();
     }
 
-    private Board createBoardEntity() {
+    private Board createBoardEntity(User user) {
         return Board.builder()
             .title("제목")
             .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
+            .user(user)
             .build();
     }
+
 }
