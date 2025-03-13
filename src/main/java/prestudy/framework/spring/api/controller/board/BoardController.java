@@ -5,12 +5,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import prestudy.framework.spring.api.authenticate.Authentication;
 import prestudy.framework.spring.api.controller.board.request.BoardCreateRequest;
-import prestudy.framework.spring.api.controller.board.request.BoardDeleteRequest;
 import prestudy.framework.spring.api.controller.board.request.BoardUpdateRequest;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.controller.common.response.ApiResponse;
 import prestudy.framework.spring.api.service.board.BoardService;
+import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class BoardController {
     }
 
     @Operation(summary = "게시물 생성")
+    @Authentication
     @PostMapping("/api/v1/boards")
     public ApiResponse<BoardResponse> createBoard(@Valid @RequestBody BoardCreateRequest request) {
         return ApiResponse.success(boardService.createBoard(request.toCommand()));
@@ -40,6 +42,7 @@ public class BoardController {
     }
 
     @Operation(summary = "게시물 수정")
+    @Authentication
     @PutMapping("/api/v1/boards/{id}")
     public ApiResponse<BoardResponse> updateBoard(@PathVariable("id") Long id,
                                                   @Valid @RequestBody BoardUpdateRequest request) {
@@ -47,10 +50,10 @@ public class BoardController {
     }
 
     @Operation(summary = "게시물 삭제")
+    @Authentication
     @DeleteMapping("/api/v1/boards/{id}")
-    public ApiResponse<Void> updateBoard(@PathVariable("id") Long id,
-                                         @Valid @RequestBody BoardDeleteRequest request) {
-        boardService.deleteBoard(request.toCommand(id));
+    public ApiResponse<Void> deleteBoard(@PathVariable("id") Long id) {
+        boardService.deleteBoard(BoardDeleteCommand.of(id));
         return ApiResponse.success();
     }
 }

@@ -21,7 +21,6 @@ import prestudy.framework.spring.domain.user.UserRepository;
 public class CommentService {
 
     private final JwtRequestUtils jwtRequestUtils;
-
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;

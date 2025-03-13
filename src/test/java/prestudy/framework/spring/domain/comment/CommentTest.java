@@ -36,8 +36,7 @@ class CommentTest extends IntegrationTestSupport {
         Board board = Board.builder()
             .title("제목")
             .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
+            .user(user)
             .build();
 
         Comment comment = Comment.builder()
@@ -64,8 +63,7 @@ class CommentTest extends IntegrationTestSupport {
         Board board = Board.builder()
             .title("제목")
             .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
+            .user(user)
             .build();
 
         Comment comment = Comment.builder()
@@ -94,8 +92,7 @@ class CommentTest extends IntegrationTestSupport {
         Board board = Board.builder()
             .title("제목")
             .content("내용")
-            .writer("홍길동")
-            .password("<PASSWORD>")
+            .user(commentUser)
             .build();
 
         Comment comment = Comment.builder()
