@@ -43,7 +43,15 @@
       "title": "string",
       "content": "string",
       "writer": "string",
-      "createdDate": "2025-02-15T00:02:42.261Z"
+      "createdDate": "2025-02-15T00:02:42.261Z",
+      "comments" : [
+        {
+          "id": 1,
+          "content": "string",
+          "writer": "string",
+          "createdDate": "2025-02-15T00:02:42.261Z"
+        }
+      ]
     }
   ]
 }
@@ -51,15 +59,19 @@
 
 + Response Fields
 
-| Path              | Type   | Description |
-|-------------------|--------|-------------|
-| code              | Number | 응답 코드       |
-| message           | String | 응답 메세지      |
-| data[].id         | Number | 게시글 ID      |
-| data[].title      | String | 게시글 제목      |
-| data[].content    | String | 게시글 내용      |
-| data[].writer     | String | 게시글 작성자     |
-| data[].createDate | String | 게시글 생성일시    |
+| Path                         | Type   | Description |
+|------------------------------|--------|-------------|
+| code                         | Number | 응답 코드       |
+| message                      | String | 응답 메세지      |
+| data[].id                    | Number | 게시글 ID      |
+| data[].title                 | String | 게시글 제목      |
+| data[].content               | String | 게시글 내용      |
+| data[].writer                | String | 게시글 작성자     |
+| data[].createDate            | String | 게시글 생성일시    |
+| data[].comments[].id         | Number | 댓글 ID       |
+| data[].comments[].content    | String | 댓글 내용       |
+| data[].comments[].writer     | String | 댓글 작성자      |
+| data[].comments[].createDate | String | 댓글 생성일시     |
 
 ### 게시글 상세 조회
 
@@ -89,22 +101,34 @@
     "title": "string",
     "content": "string",
     "writer": "string",
-    "createdDate": "2025-02-15T00:02:42.261Z"
+    "createdDate": "2025-02-15T00:02:42.261Z",
+    "comments" : [
+      {
+        "id": 1,
+        "content": "string",
+        "writer": "string",
+        "createdDate": "2025-02-15T00:02:42.261Z"
+      }
+    ]
   }
 }
 ```
 
 + Response Fields
 
-| Path            | Type   | Description |
-|-----------------|--------|-------------|
-| code            | Number | 응답 코드       |
-| message         | String | 응답 메세지      |
-| data.id         | Number | 게시글 ID      |
-| data.title      | String | 게시글 제목      |
-| data.content    | String | 게시글 내용      |
-| data.writer     | String | 게시글 작성자     |
-| data.createDate | String | 게시글 생성일시    |
+| Path                       | Type   | Description |
+|----------------------------|--------|-------------|
+| code                       | Number | 응답 코드       |
+| message                    | String | 응답 메세지      |
+| data.id                    | Number | 게시글 ID      |
+| data.title                 | String | 게시글 제목      |
+| data.content               | String | 게시글 내용      |
+| data.writer                | String | 게시글 작성자     |
+| data.createDate            | String | 게시글 생성일시    |
+| data.comments[].id         | Number | 댓글 ID       |
+| data.comments[].content    | String | 댓글 내용       |
+| data.comments[].writer     | String | 댓글 작성자      |
+| data.comments[].createDate | String | 댓글 생성일시     |
 
 ### 게시글 생성
 
@@ -115,13 +139,12 @@
 
 + URL : `/api/v1/boards`
 + Method : `POST`
++ Header : `Authorization : Bearer {JWT Token}`
 + Request Body 
 ```json
 {
   "title": "string",
-  "content": "string",
-  "writer": "string",
-  "password": "string"
+  "content": "string"
 }
 ```
 + Request Fields
@@ -130,8 +153,6 @@
 |----------|--------|----------|-------------|
 | title    | String | true     | 게시글 제목      |
 | content  | String | true     | 게시글 내용      |
-| writer   | String | true     | 게시글 작성자명    |
-| password | String | true     | 게시글 패스워드    |
 
 
 **[Response]**
@@ -173,6 +194,7 @@
 
 + URL : `/api/v1/boards/{id}`
 + Method : `PUT`
++ Header : `Authorization : Bearer {JWT Token}`
 + Path Parameters
 
 | Parameter | Description |
@@ -184,8 +206,6 @@
 {
   "title": "string",
   "content": "string",
-  "writer": "string",
-  "password": "string"
 }
 ```
 + Request Fields
@@ -194,9 +214,6 @@
 |----------|--------|----------|-------------|
 | title    | String |          | 게시글 제목      |
 | content  | String |          | 게시글 내용      |
-| writer   | String |          | 게시글 작성자명    |
-| password | String |          | 게시글 패스워드    |
-
 
 **[Response]**
 
@@ -237,24 +254,12 @@
 
 + URL : `/api/v1/boards/{id}`
 + Method : `DELETE`
++ Header : `Authorization : Bearer {JWT Token}`
 + Path Parameters
 
 | Parameter | Description |
 |-----------|-------------|
 | id        | 게시글 ID      |
-
-+ Request Body
-```json
-{
-  "password": "string"
-}
-```
-+ Request Fields
-
-| Path     | Type   | Required | Description |
-|----------|--------|----------|-------------|
-| password | String | true     | 게시글 패스워드    |
-
 
 **[Response]**
 
