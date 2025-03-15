@@ -44,7 +44,11 @@ public class Comment extends BaseEntity {
         this.content = content;
     }
 
-    public boolean isNotWriter(User user) {
+    public boolean hasNotWriterPermission(User user) {
+        return isNotWriter(user) && user.isNotAdmin();
+    }
+
+    private boolean isNotWriter(User user) {
         return !this.user.getId().equals(user.getId());
     }
 }

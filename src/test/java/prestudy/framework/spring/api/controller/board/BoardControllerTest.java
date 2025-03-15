@@ -211,7 +211,7 @@ class BoardControllerTest extends ControllerTestSupport {
     @Test
     void getBoardByInvalidId() throws Exception {
         // given
-        when(boardService.getBoardById(anyLong())).thenThrow(new IllegalArgumentException("존재하지 않는 게시글입니다."));
+        when(boardService.getBoardById(anyLong())).thenThrow(new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -220,7 +220,7 @@ class BoardControllerTest extends ControllerTestSupport {
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
-            .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
+            .andExpect(jsonPath("$.message").value("게시글이 존재하지 않습니다."));
     }
 
     @DisplayName("게시글을 수정할 때 토큰이 유효해야 한다.")
@@ -257,7 +257,7 @@ class BoardControllerTest extends ControllerTestSupport {
             .build();
 
         when(boardService.updateBoard(any(BoardUpdateCommand.class)))
-            .thenThrow(new IllegalArgumentException("존재하지 않는 게시글입니다."));
+            .thenThrow(new IllegalArgumentException("게시글이 존재하지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -269,7 +269,7 @@ class BoardControllerTest extends ControllerTestSupport {
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
-            .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
+            .andExpect(jsonPath("$.message").value("게시글이 존재하지 않습니다."));
     }
 
     @DisplayName("게시글을 수정한다.")
@@ -332,7 +332,7 @@ class BoardControllerTest extends ControllerTestSupport {
     @Test
     void deleteBoardWithInvalidId() throws Exception {
         // given
-        doThrow(new IllegalArgumentException("존재하지 않는 게시글입니다."))
+        doThrow(new IllegalArgumentException("게시글이 존재하지 않습니다."))
             .when(boardService)
             .deleteBoard(any(BoardDeleteCommand.class));
 
@@ -345,7 +345,7 @@ class BoardControllerTest extends ControllerTestSupport {
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
-            .andExpect(jsonPath("$.message").value("존재하지 않는 게시글입니다."));
+            .andExpect(jsonPath("$.message").value("게시글이 존재하지 않습니다."));
     }
 
     @DisplayName("게시글을 삭제한다.")

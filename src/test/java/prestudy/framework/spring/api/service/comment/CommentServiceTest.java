@@ -45,24 +45,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void createCommentWithInvalidToken() {
         // given
-        given(authenticationUserProvider.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
-
-        CommentCreateCommand command = CommentCreateCommand.builder()
-            .boardId(1L)
-            .content("댓글 내용")
-            .build();
-
-        // when & then
-        assertThatThrownBy(() -> commentService.createComment(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
-    }
-
-    @DisplayName("댓글 작성 시 사용자는 유효해야한다.")
-    @Test
-    void createCommentWithInvalidUser() {
-        // given
-        given(authenticationUserProvider.getUserId()).willReturn(0L);
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
 
         CommentCreateCommand command = CommentCreateCommand.builder()
             .boardId(1L)
@@ -83,7 +66,7 @@ class CommentServiceTest extends IntegrationTestSupport {
 
         userRepository.save(user);
 
-        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(user);
 
         CommentCreateCommand command = CommentCreateCommand.builder()
             .boardId(1L)
@@ -106,7 +89,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         Board board = createBoardEntity(user);
         boardRepository.save(board);
 
-        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(user);
 
         CommentCreateCommand command = CommentCreateCommand.builder()
             .boardId(board.getId())
@@ -124,24 +107,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void updateCommentWithInvalidToken() {
         // given
-        given(authenticationUserProvider.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
-
-        CommentUpdateCommand command = CommentUpdateCommand.builder()
-            .id(1L)
-            .content("댓글 내용")
-            .build();
-
-        // when & then
-        assertThatThrownBy(() -> commentService.updateComment(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
-    }
-
-    @DisplayName("댓글 수정 시 사용자는 유효해야한다.")
-    @Test
-    void updateCommentWithInvalidUser() {
-        // given
-        given(authenticationUserProvider.getUserId()).willReturn(0L);
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
 
         CommentUpdateCommand command = CommentUpdateCommand.builder()
             .id(1L)
@@ -161,7 +127,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         User user = User.ofUser("123abc", "Password12!");
         userRepository.save(user);
 
-        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(user);
 
         CommentUpdateCommand command = CommentUpdateCommand.builder()
             .id(0L)
@@ -186,7 +152,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         Board board = createBoardEntity(commentUser);
         boardRepository.save(board);
 
-        given(authenticationUserProvider.getUserId()).willReturn(tokenUser.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(tokenUser);
 
         Comment comment = Comment.builder()
             .content("댓글 생성")
@@ -219,7 +185,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         Board board = createBoardEntity(user);
         boardRepository.save(board);
 
-        given(authenticationUserProvider.getUserId()).willReturn(admin.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(admin);
 
         Comment comment = Comment.builder()
             .content("댓글 생성")
@@ -251,7 +217,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         Board board = createBoardEntity(user);
         boardRepository.save(board);
 
-        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(user);
 
         Comment comment = Comment.builder()
             .content("댓글 생성")
@@ -277,21 +243,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void deleteCommentWithInvalidToken() {
         // given
-        given(authenticationUserProvider.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
-
-        CommentDeleteCommand command = CommentDeleteCommand.of(1L);
-
-        // when & then
-        assertThatThrownBy(() -> commentService.deleteComment(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
-    }
-
-    @DisplayName("댓글 삭제 시 사용자는 유효해야한다.")
-    @Test
-    void deleteCommentWithInvalidUser() {
-        // given
-        given(authenticationUserProvider.getUserId()).willReturn(0L);
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
 
         CommentDeleteCommand command = CommentDeleteCommand.of(1L);
 
@@ -309,7 +261,7 @@ class CommentServiceTest extends IntegrationTestSupport {
 
         userRepository.save(user);
 
-        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(user);
 
         CommentDeleteCommand command = CommentDeleteCommand.of(1L);
 
@@ -331,7 +283,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         Board board = createBoardEntity(commentUser);
         boardRepository.save(board);
 
-        given(authenticationUserProvider.getUserId()).willReturn(tokenUser.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(tokenUser);
 
         Comment comment = Comment.builder()
             .content("댓글 생성")
@@ -362,7 +314,7 @@ class CommentServiceTest extends IntegrationTestSupport {
 
         boardRepository.save(board);
 
-        given(authenticationUserProvider.getUserId()).willReturn(admin.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(admin);
 
         Comment comment = Comment.builder()
             .content("댓글 생성")
@@ -392,7 +344,7 @@ class CommentServiceTest extends IntegrationTestSupport {
         Board board = createBoardEntity(user);
         boardRepository.save(board);
 
-        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.authenticatedUser()).willReturn(user);
 
         Comment comment = Comment.builder()
             .content("댓글 생성")

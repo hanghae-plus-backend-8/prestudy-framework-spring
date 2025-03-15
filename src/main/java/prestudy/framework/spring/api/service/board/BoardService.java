@@ -13,7 +13,6 @@ import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.board.BoardRepository;
 import prestudy.framework.spring.domain.comment.CommentRepository;
 import prestudy.framework.spring.domain.user.User;
-import prestudy.framework.spring.domain.user.UserRepository;
 
 import java.util.List;
 
@@ -22,8 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final AuthenticationUserProvider authenticationUserProvider;
-    private final UserRepository userRepository;
+    private final AuthenticationUserProvider userProvider;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
@@ -36,9 +34,9 @@ public class BoardService {
     }
 
     public BoardResponse createBoard(BoardCreateCommand createCommand) {
-        User user = getCurrentUser();
-        Board savedBoard = boardRepository.save(createCommand.toEntity(user));
+        User user = userProvider.authenticatedUser();
 
+        Board savedBoard = boardRepository.save(createCommand.toEntity(user));
         return BoardResponse.of(savedBoard);
     }
 
@@ -49,17 +47,22 @@ public class BoardService {
     }
 
     public BoardResponse updateBoard(BoardUpdateCommand command) {
-        User user = getCurrentUser();
+        User user = userProvider.authenticatedUser();
         Board board = findBoardById(command.getId());
 
-        if (hasNotPermission(board, user)) {
-            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
-        }
-
+        validateWriterPermission(board, user);
         board.updateTitle(command.getTitle());
         board.updateContent(command.getContent());
 
         return BoardResponse.of(board);
+    }
+
+    public void deleteBoard(BoardDeleteCommand command) {
+        User user = userProvider.authenticatedUser();
+        Board board = findBoardById(command.getId());
+
+        validateWriterPermission(board, user);
+        boardRepository.delete(board);
     }
 
     private BoardResponse responseWithComments(Board board) {
@@ -67,32 +70,18 @@ public class BoardService {
             .stream()
             .map(CommentResponse::of)
             .toList();
+
         return BoardResponse.of(board, comments);
-    }
-
-    public void deleteBoard(BoardDeleteCommand command) {
-        User user = getCurrentUser();
-        Board board = findBoardById(command.getId());
-
-        if (hasNotPermission(board, user)) {
-            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
-        }
-
-        boardRepository.delete(board);
     }
 
     private Board findBoardById(Long id) {
         return boardRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
     }
 
-    private User getCurrentUser() {
-        Long userId = authenticationUserProvider.getUserId();
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalStateException("토큰이 유효하지 않습니다."));
-    }
-
-    private boolean hasNotPermission(Board board, User user) {
-        return board.isNotWriter(user) && user.isNotAdmin();
+    private void validateWriterPermission(Board board, User user) {
+        if (board.hasNotWriterPermission(user)) {
+            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
+        }
     }
 }
