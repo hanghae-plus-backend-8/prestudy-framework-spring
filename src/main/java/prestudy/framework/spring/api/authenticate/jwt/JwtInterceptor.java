@@ -8,13 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
 import prestudy.framework.spring.api.authenticate.AuthenticationHandler;
+import prestudy.framework.spring.api.authenticate.AuthenticationInterceptor;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtInterceptor implements HandlerInterceptor {
+public class JwtInterceptor implements AuthenticationInterceptor {
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER_TOKEN_PREFIX = "Bearer ";

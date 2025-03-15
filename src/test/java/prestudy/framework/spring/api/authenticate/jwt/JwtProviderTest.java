@@ -5,7 +5,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import prestudy.framework.spring.api.authenticate.jwt.JwtProvider;
 import prestudy.framework.spring.support.IntegrationTestSupport;
 
 import java.time.LocalDateTime;
