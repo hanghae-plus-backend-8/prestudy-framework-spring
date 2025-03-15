@@ -42,13 +42,13 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public BoardResponse getBoardById(Long id) {
-        Board findBoard = findBoardById(id);
+        Board findBoard = findBoardBy(id);
         return responseWithComments(findBoard);
     }
 
     public BoardResponse updateBoard(BoardUpdateCommand command) {
         User user = userProvider.authenticatedUser();
-        Board board = findBoardById(command.getId());
+        Board board = findBoardBy(command.getId());
 
         validateWriterPermission(board, user);
         board.updateTitle(command.getTitle());
@@ -59,7 +59,7 @@ public class BoardService {
 
     public void deleteBoard(BoardDeleteCommand command) {
         User user = userProvider.authenticatedUser();
-        Board board = findBoardById(command.getId());
+        Board board = findBoardBy(command.getId());
 
         validateWriterPermission(board, user);
         boardRepository.delete(board);
@@ -74,7 +74,7 @@ public class BoardService {
         return BoardResponse.of(board, comments);
     }
 
-    private Board findBoardById(Long id) {
+    private Board findBoardBy(Long id) {
         return boardRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
     }

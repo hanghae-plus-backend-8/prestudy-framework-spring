@@ -25,7 +25,7 @@ public class CommentService {
 
     public CommentResponse createComment(CommentCreateCommand command) {
         User user = userProvider.authenticatedUser();
-        Board board = findBoardById(command.getBoardId());
+        Board board = findBoardBy(command.getBoardId());
 
         Comment comment = Comment.builder()
             .content(command.getContent())
@@ -55,7 +55,7 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    private Board findBoardById(Long id) {
+    private Board findBoardBy(Long id) {
         return boardRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
     }
