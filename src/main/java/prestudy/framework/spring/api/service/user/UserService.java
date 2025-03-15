@@ -18,7 +18,7 @@ public class UserService {
     public void createUser(UserCreateCommand createCommand) {
         userRepository.findByUsername(createCommand.getUsername())
             .ifPresent(user -> {
-                throw new IllegalArgumentException("이미 존재하는 유저명입니다.");
+                throw new IllegalArgumentException("중복된 username 입니다.");
             });
 
         userRepository.save(createCommand.toEntity());
@@ -26,10 +26,10 @@ public class UserService {
 
     public String loginUser(UserLoginCommand loginCommand) {
         User findUser = userRepository.findByUsername(loginCommand.getUsername())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저명입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
         if (findUser.isNotEqualPassword(loginCommand.getPassword())) {
-            throw new IllegalArgumentException("패스워드가 일치하지 않습니다.");
+            throw new IllegalArgumentException("회원을 찾을 수 없습니다.");
         }
 
         return jwtProvider.generateToken(findUser.getId());

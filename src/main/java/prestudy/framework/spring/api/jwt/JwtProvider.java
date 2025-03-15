@@ -33,7 +33,7 @@ public class JwtProvider {
             .compact();
     }
 
-    public Claims parseToken(String jwt) {
+    public Claims verify(String jwt) {
         return Jwts.parser()
             .verifyWith(createSecretKey())
             .build()

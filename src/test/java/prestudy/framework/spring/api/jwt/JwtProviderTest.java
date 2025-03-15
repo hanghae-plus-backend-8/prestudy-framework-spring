@@ -34,7 +34,7 @@ class JwtProviderTest extends IntegrationTestSupport {
 
     @DisplayName("JWT 토큰이 만료되면 파싱에 실패한다.")
     @Test
-    void parseTokenWithExpired() {
+    void verifyWithExpired() {
         // given
         Long userId = 1L;
         LocalDateTime expiration = LocalDateTime.of(2025, 2, 7, 12, 0);
@@ -42,13 +42,13 @@ class JwtProviderTest extends IntegrationTestSupport {
         String jwt = jwtProvider.generateToken(userId, expiration);
 
         // when & then
-        assertThatThrownBy(() -> jwtProvider.parseToken(jwt))
+        assertThatThrownBy(() -> jwtProvider.verify(jwt))
             .isInstanceOf(ExpiredJwtException.class);
     }
 
     @DisplayName("JWT 토큰을 파싱한다.")
     @Test
-    void parseToken() {
+    void verify() {
         // given
         Long userId = 1L;
         LocalDateTime expiration = LocalDateTime.now().plusMinutes(10);
@@ -56,7 +56,7 @@ class JwtProviderTest extends IntegrationTestSupport {
         String jwt = jwtProvider.generateToken(userId, expiration);
 
         // when
-        Claims claims = jwtProvider.parseToken(jwt);
+        Claims claims = jwtProvider.verify(jwt);
 
         // then
         assertThat(claims.getSubject()).isEqualTo(userId.toString());

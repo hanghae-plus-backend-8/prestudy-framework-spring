@@ -16,25 +16,50 @@ public class User extends BaseEntity {
 
     public static final int USERNAME_MIN_LENGTH = 4;
     public static final int USERNAME_MAX_LENGTH = 10;
-    public static final Pattern USERNAME_REGEX = Pattern.compile("^(?=.*[a-z])(?=.*\\d)[a-z0-9]*$");
     public static final int PASSWORD_MIN_LENGTH = 8;
     public static final int PASSWORD_MAX_LENGTH = 15;
-    public static final Pattern PASSWORD_REGEX = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9]*$");
+    public static final Pattern USERNAME_REGEX = Pattern.compile("^(?=.*[a-z])(?=.*\\d)[a-z0-9]*$");
+    public static final Pattern PASSWORD_REGEX = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()])[a-zA-Z0-9!@#$%^&*()]*$");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     private String username;
 
     private String password;
 
-    private User(String username, String password) {
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    private User(String username, String password, UserRole role) {
         validationUsername(username);
         validationPassword(password);
 
         this.username = username;
         this.password = password;
+        this.role = role;
+    }
+
+    public static User ofUser(String username, String password) {
+        return new User(username, password, UserRole.USER);
+    }
+
+    public static User ofAdmin(String username, String password) {
+        return new User(username, password, UserRole.ADMIN);
+    }
+
+    public boolean isNotEqualPassword(String password) {
+        return !this.password.equals(password);
+    }
+
+    public boolean isAdmin() {
+        return UserRole.ADMIN.equals(role);
+    }
+
+    public boolean isNotAdmin() {
+        return !isAdmin();
     }
 
     private void validationUsername(String username) {
@@ -61,15 +86,7 @@ public class User extends BaseEntity {
         }
 
         if (!PASSWORD_REGEX.matcher(password).matches()) {
-            throw new IllegalArgumentException("비밀번호는 알파벳 대소문자와 숫자로 구성되어야 합니다.");
+            throw new IllegalArgumentException("비밀번호는 알파벳 대소문자와 특수문자, 숫자로 구성되어야 합니다.");
         }
-    }
-
-    public static User of(String username, String password) {
-        return new User(username, password);
-    }
-
-    public boolean isNotEqualPassword(String password) {
-        return !this.password.equals(password);
     }
 }

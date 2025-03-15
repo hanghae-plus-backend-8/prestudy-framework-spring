@@ -1,5 +1,9 @@
 # ERD 설계
 
-![image](https://github.com/user-attachments/assets/373c5851-7a02-4aca-b682-cb2337c0307e)
+![image](https://github.com/user-attachments/assets/858004d9-2c04-43dd-9f35-de54f536cb26)
+
+
+
+
 
 

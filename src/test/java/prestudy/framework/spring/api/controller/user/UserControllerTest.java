@@ -33,7 +33,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("유저명은 필수 값 입니다."));
     }
@@ -53,7 +53,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호는 필수 값 입니다."));
     }
@@ -67,7 +67,7 @@ class UserControllerTest extends ControllerTestSupport {
             .password("Password12")
             .build();
 
-        doThrow(new IllegalArgumentException("이미 존재하는 유저명입니다."))
+        doThrow(new IllegalArgumentException("중복된 username 입니다."))
             .when(userService)
             .createUser(any(UserCreateCommand.class));
 
@@ -78,9 +78,9 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
-            .andExpect(jsonPath("$.message").value("이미 존재하는 유저명입니다."));
+            .andExpect(jsonPath("$.message").value("중복된 username 입니다."));
     }
 
     @DisplayName("유저를 생성한다.")
@@ -119,7 +119,7 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("유저명은 필수 값 입니다."));
     }
@@ -139,14 +139,14 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
             .andExpect(jsonPath("$.message").value("비밀번호는 필수 값 입니다."));
     }
 
-    @DisplayName("존재하지 않는 유저명으로 로그인한다.")
+    @DisplayName("로그인 정보가 일치하지 않으면 로그인 할 수 없다.")
     @Test
-    void loginUserWithNotExistUsername() throws Exception {
+    void loginUserWithWrongUserInfo() throws Exception {
         // given
         UserLoginRequest request = UserLoginRequest.builder()
             .username("username")
@@ -154,7 +154,7 @@ class UserControllerTest extends ControllerTestSupport {
             .build();
 
         when(userService.loginUser(any(UserLoginCommand.class)))
-            .thenThrow(new IllegalArgumentException("존재하지 않는 유저명입니다."));
+            .thenThrow(new IllegalArgumentException("회원을 찾을 수 없습니다."));
 
         // when & then
         mockMvc.perform(
@@ -163,33 +163,9 @@ class UserControllerTest extends ControllerTestSupport {
                     .contentType(MediaType.APPLICATION_JSON)
             )
             .andDo(print())
-            .andExpect(status().isOk())
+            .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code").value(400))
-            .andExpect(jsonPath("$.message").value("존재하지 않는 유저명입니다."));
-    }
-
-    @DisplayName("일치하지 않는 패스워드으로 로그인한다.")
-    @Test
-    void loginUserWithWrongPassword() throws Exception {
-        // given
-        UserLoginRequest request = UserLoginRequest.builder()
-            .username("username")
-            .password("<PASSWORD>")
-            .build();
-
-        when(userService.loginUser(any(UserLoginCommand.class)))
-            .thenThrow(new IllegalArgumentException("패스워드가 일치하지 않습니다."));
-
-        // when & then
-        mockMvc.perform(
-                post("/api/v1/users/login")
-                    .content(objectMapper.writeValueAsString(request))
-                    .contentType(MediaType.APPLICATION_JSON)
-            )
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.code").value(400))
-            .andExpect(jsonPath("$.message").value("패스워드가 일치하지 않습니다."));
+            .andExpect(jsonPath("$.message").value("회원을 찾을 수 없습니다."));
     }
 
     @DisplayName("로그인을 한다.")

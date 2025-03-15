@@ -2,7 +2,7 @@ name: CI/CD
 
 on:
   push:
-    branches: [ "week2/discphy" ]  # TODO: 수정 후 테스트
+    branches: [ "discphy" ]
 
 jobs:
   build:

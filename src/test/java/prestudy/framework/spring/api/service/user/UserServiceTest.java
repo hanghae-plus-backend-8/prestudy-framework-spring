@@ -39,9 +39,9 @@ class UserServiceTest extends IntegrationTestSupport {
     void createUserWithExistUsername() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
-        userRepository.save(User.of(username, password));
+        userRepository.save(User.ofUser(username, password));
 
         UserCreateCommand createCommand = UserCreateCommand.builder()
             .username(username)
@@ -51,7 +51,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // when & then
         assertThatThrownBy(() -> userService.createUser(createCommand))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("이미 존재하는 유저명입니다.");
+            .hasMessage("중복된 username 입니다.");
     }
 
     @DisplayName("유저를 생성한다.")
@@ -59,7 +59,7 @@ class UserServiceTest extends IntegrationTestSupport {
     void createUser() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
         UserCreateCommand createCommand = UserCreateCommand.builder()
             .username(username)
@@ -88,7 +88,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // when & then
         assertThatThrownBy(() -> userService.loginUser(loginCommand))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("존재하지 않는 유저명입니다.");
+            .hasMessage("회원을 찾을 수 없습니다.");
     }
 
     @DisplayName("패스워드가 일치하지 않으면 로그인하지 못한다.")
@@ -96,9 +96,9 @@ class UserServiceTest extends IntegrationTestSupport {
     void loginWithWrongPassword() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
-        userRepository.save(User.of(username, password));
+        userRepository.save(User.ofUser(username, password));
 
         UserLoginCommand loginCommand = UserLoginCommand.builder()
             .username("123abc")
@@ -108,7 +108,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // when & then
         assertThatThrownBy(() -> userService.loginUser(loginCommand))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("패스워드가 일치하지 않습니다.");
+            .hasMessage("회원을 찾을 수 없습니다.");
     }
 
     @DisplayName("로그인이 성공하면 JWT를 반환한다.")
@@ -116,13 +116,13 @@ class UserServiceTest extends IntegrationTestSupport {
     void loginUserWithReturnJwt() {
         // given
         String username = "123abc";
-        String password = "Password12";
+        String password = "Password12!";
 
-        User savedUser = userRepository.save(User.of(username, password));
+        User savedUser = userRepository.save(User.ofUser(username, password));
 
         UserLoginCommand loginCommand = UserLoginCommand.builder()
             .username("123abc")
-            .password("Password12")
+            .password("Password12!")
             .build();
 
         // when
@@ -131,7 +131,7 @@ class UserServiceTest extends IntegrationTestSupport {
         // then
         assertThat(jwt).isNotBlank();
 
-        Claims claims = jwtProvider.parseToken(jwt);
+        Claims claims = jwtProvider.verify(jwt);
         assertThat(claims.getSubject()).isEqualTo(savedUser.getId().toString());
         assertThat(claims.getExpiration()).isAfter(new Date());
     }

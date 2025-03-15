@@ -17,6 +17,6 @@ public class UserCreateCommand {
     }
 
     public User toEntity() {
-        return User.of(username, password);
+        return User.ofUser(username, password);
     }
 }
