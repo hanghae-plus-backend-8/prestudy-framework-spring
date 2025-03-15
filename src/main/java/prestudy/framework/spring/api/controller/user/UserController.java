@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import prestudy.framework.spring.api.controller.common.response.ApiResponse;
 import prestudy.framework.spring.api.controller.user.request.UserCreateRequest;
 import prestudy.framework.spring.api.controller.user.request.UserLoginRequest;
-import prestudy.framework.spring.api.jwt.JwtResponseUtils;
+import prestudy.framework.spring.api.controller.user.response.UserLoginResponse;
 import prestudy.framework.spring.api.service.user.UserService;
 
 @Tag(name = "회원 API")
@@ -32,6 +32,6 @@ public class UserController {
     @PostMapping("/api/v1/users/login")
     public ResponseEntity<ApiResponse<Void>> loginUser(@Valid @RequestBody UserLoginRequest request) {
         String jwt = userService.loginUser(request.toCommand());
-        return JwtResponseUtils.response(jwt);
+        return UserLoginResponse.response(jwt);
     }
 }
