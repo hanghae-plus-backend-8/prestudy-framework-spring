@@ -1,4 +1,4 @@
-package prestudy.framework.spring.api.jwt;
+package prestudy.framework.spring.api.controller.user.response;
 
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -9,7 +9,7 @@ import prestudy.framework.spring.api.controller.common.response.ApiResponse;
 import static lombok.AccessLevel.PRIVATE;
 
 @NoArgsConstructor(access = PRIVATE)
-public class JwtResponseUtils {
+public class UserLoginResponse {
 
     public static ResponseEntity<ApiResponse<Void>> response(String jwt) {
         return new ResponseEntity<>(

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import prestudy.framework.spring.domain.BaseEntity;
+import prestudy.framework.spring.domain.user.User;
 
 @Getter
 @Entity
@@ -21,20 +22,15 @@ public class Board extends BaseEntity {
 
     private String content;
 
-    private String writer;
-
-    private String password;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Builder
-    private Board(String title, String content, String writer, String password) {
+    private Board(String title, String content, User user) {
         this.title = title;
         this.content = content;
-        this.writer = writer;
-        this.password = password;
-    }
-
-    public boolean isInvalidPassword(String password) {
-        return !this.password.equals(password);
+        this.user = user;
     }
 
     public void updateTitle(String title) {
@@ -53,11 +49,11 @@ public class Board extends BaseEntity {
         this.content = content;
     }
 
-    public void updateWriter(String writer) {
-        if (writer == null || writer.isBlank()) {
-            return;
-        }
+    public boolean hasNotWriterPermission(User user) {
+        return isNotWriter(user) && user.isNotAdmin();
+    }
 
-        this.writer = writer;
+    private boolean isNotWriter(User user) {
+        return !this.user.getId().equals(user.getId());
     }
 }

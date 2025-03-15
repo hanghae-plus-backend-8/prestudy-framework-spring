@@ -1,4 +1,4 @@
-package prestudy.framework.spring.api.jwt;
+package prestudy.framework.spring.api.authenticate.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

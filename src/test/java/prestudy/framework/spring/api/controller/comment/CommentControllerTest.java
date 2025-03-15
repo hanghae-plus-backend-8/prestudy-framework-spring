@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import prestudy.framework.spring.api.controller.comment.request.CommentCreateRequest;
 import prestudy.framework.spring.api.controller.comment.request.CommentUpdateRequest;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 import prestudy.framework.spring.support.ControllerTestSupport;
 
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ class CommentControllerTest extends ControllerTestSupport {
         // given
         CommentCreateRequest request = CommentCreateRequest.of("댓글 내용");
 
-        when(commentService.createComment(any())).thenThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        when(commentService.createComment(any())).thenThrow(new AuthenticationException("토큰이 유효하지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -135,7 +136,7 @@ class CommentControllerTest extends ControllerTestSupport {
         // given
         CommentUpdateRequest request = CommentUpdateRequest.of("댓글 내용 수정");
 
-        when(commentService.updateComment(any())).thenThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        when(commentService.updateComment(any())).thenThrow(new AuthenticationException("토큰이 유효하지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -156,7 +157,7 @@ class CommentControllerTest extends ControllerTestSupport {
         // given
         CommentUpdateRequest request = CommentUpdateRequest.of("댓글 내용 수정");
 
-        when(commentService.updateComment(any())).thenThrow(new IllegalStateException("작성자만 삭제/수정할 수 있습니다."));
+        when(commentService.updateComment(any())).thenThrow(new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다."));
 
         // when & then
         mockMvc.perform(
@@ -201,7 +202,7 @@ class CommentControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.data.createdDate").value("2025-02-07T12:00:00"));
     }
 
-    @DisplayName("댓글을 수정할 때 토큰이 유효해야 한다.")
+    @DisplayName("댓글을 삭제할 때 토큰이 유효해야 한다.")
     @Test
     void deleteCommentWithInvalidToken() throws Exception {
         // given
@@ -221,7 +222,7 @@ class CommentControllerTest extends ControllerTestSupport {
             .andExpect(jsonPath("$.message").value("토큰이 유효하지 않습니다."));
     }
 
-    @DisplayName("댓글을 수정할 때 권한이 있어야 한다.")
+    @DisplayName("댓글을 삭제할 때 권한이 있어야 한다.")
     @Test
     void deleteCommentWithoutPermission() throws Exception {
         // given

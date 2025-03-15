@@ -1,4 +1,4 @@
-package prestudy.framework.spring.api.jwt;
+package prestudy.framework.spring.api.authenticate.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -8,13 +8,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerInterceptor;
 import prestudy.framework.spring.api.authenticate.AuthenticationHandler;
+import prestudy.framework.spring.api.authenticate.AuthenticationInterceptor;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class JwtInterceptor implements HandlerInterceptor {
+public class JwtInterceptor implements AuthenticationInterceptor {
 
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER_TOKEN_PREFIX = "Bearer ";
@@ -36,12 +37,8 @@ public class JwtInterceptor implements HandlerInterceptor {
             Long userId = Long.parseLong(subject);
 
             request.setAttribute("userId", userId);
-        } catch (IllegalArgumentException e) {
-            log.error("Authorization.IllegalArgumentException {}", e.getMessage());
-            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
         } catch (MalformedJwtException | ExpiredJwtException e) {
-            log.error("Authorization.JwtException", e);
-            throw new IllegalArgumentException("토큰이 유효하지 않습니다.");
+            throw new AuthenticationException(e.getMessage());
         }
 
         return true;
@@ -51,11 +48,11 @@ public class JwtInterceptor implements HandlerInterceptor {
         String header = request.getHeader(AUTHORIZATION);
 
         if (header == null) {
-            throw new IllegalArgumentException("Authorization header is null");
+            throw new AuthenticationException("Authorization header is null");
         }
 
         if (isNotBearerStartsWith(header)) {
-            throw new IllegalArgumentException("Authorization header is not Bearer starts with");
+            throw new AuthenticationException("Authorization header is not Bearer starts with");
         }
 
         return header.substring(BEARER_TOKEN_PREFIX.length());

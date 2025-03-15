@@ -7,11 +7,13 @@ import lombok.Getter;
 public class BoardDeleteCommand {
 
     private final Long id;
-    private final String password;
 
     @Builder
-    private BoardDeleteCommand(Long id, String password) {
+    private BoardDeleteCommand(Long id) {
         this.id = id;
-        this.password = password;
+    }
+
+    public static BoardDeleteCommand of(Long id) {
+        return new BoardDeleteCommand(id);
     }
 }

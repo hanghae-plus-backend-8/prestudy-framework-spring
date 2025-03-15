@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
+import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
+import prestudy.framework.spring.api.authenticate.AuthenticationUserProvider;
 import prestudy.framework.spring.api.service.board.command.BoardCreateCommand;
 import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
 import prestudy.framework.spring.domain.board.Board;
 import prestudy.framework.spring.domain.board.BoardRepository;
+import prestudy.framework.spring.domain.comment.CommentRepository;
+import prestudy.framework.spring.domain.user.User;
 
 import java.util.List;
 
@@ -17,51 +21,67 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
 
+    private final AuthenticationUserProvider userProvider;
     private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional(readOnly = true)
     public List<BoardResponse> getBoards() {
         List<Board> boards = boardRepository.findByOrderByCreatedDateTimeDesc();
         return boards.stream()
-            .map(BoardResponse::of)
+            .map(this::responseWithComments)
             .toList();
     }
 
     public BoardResponse createBoard(BoardCreateCommand createCommand) {
-        Board savedBoard = boardRepository.save(createCommand.toEntity());
+        User user = userProvider.authenticatedUser();
+
+        Board savedBoard = boardRepository.save(createCommand.toEntity(user));
         return BoardResponse.of(savedBoard);
     }
 
     @Transactional(readOnly = true)
     public BoardResponse getBoardById(Long id) {
-        Board findBoard = findBoardById(id);
-        return BoardResponse.of(findBoard);
+        Board findBoard = findBoardBy(id);
+        return responseWithComments(findBoard);
     }
 
     public BoardResponse updateBoard(BoardUpdateCommand command) {
-        Board findBoard = findBoardById(command.getId());
-        if (findBoard.isInvalidPassword(command.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
+        User user = userProvider.authenticatedUser();
+        Board board = findBoardBy(command.getId());
 
-        findBoard.updateTitle(command.getTitle());
-        findBoard.updateContent(command.getContent());
-        findBoard.updateWriter(command.getWriter());
+        validateWriterPermission(board, user);
+        board.updateTitle(command.getTitle());
+        board.updateContent(command.getContent());
 
-        return BoardResponse.of(findBoard);
+        return BoardResponse.of(board);
     }
 
     public void deleteBoard(BoardDeleteCommand command) {
-        Board findBoard = findBoardById(command.getId());
-        if (findBoard.isInvalidPassword(command.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
+        User user = userProvider.authenticatedUser();
+        Board board = findBoardBy(command.getId());
 
-        boardRepository.delete(findBoard);
+        validateWriterPermission(board, user);
+        boardRepository.delete(board);
     }
 
-    private Board findBoardById(Long id) {
+    private BoardResponse responseWithComments(Board board) {
+        List<CommentResponse> comments = commentRepository.findByBoardIdOrderByCreatedDateTimeDesc(board.getId())
+            .stream()
+            .map(CommentResponse::of)
+            .toList();
+
+        return BoardResponse.of(board, comments);
+    }
+
+    private Board findBoardBy(Long id) {
         return boardRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+            .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    }
+
+    private void validateWriterPermission(Board board, User user) {
+        if (board.hasNotWriterPermission(user)) {
+            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
+        }
     }
 }

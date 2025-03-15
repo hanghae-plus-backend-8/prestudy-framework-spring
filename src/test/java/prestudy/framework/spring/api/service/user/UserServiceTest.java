@@ -5,7 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import prestudy.framework.spring.api.jwt.JwtProvider;
+import prestudy.framework.spring.api.authenticate.jwt.JwtProvider;
 import prestudy.framework.spring.api.service.user.command.UserCreateCommand;
 import prestudy.framework.spring.api.service.user.command.UserLoginCommand;
 import prestudy.framework.spring.domain.user.User;

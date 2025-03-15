@@ -3,8 +3,8 @@ package prestudy.framework.spring.api.service.comment;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import prestudy.framework.spring.api.authenticate.AuthenticationUserProvider;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
-import prestudy.framework.spring.api.jwt.JwtRequestUtils;
 import prestudy.framework.spring.api.service.comment.command.CommentCreateCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentDeleteCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentUpdateCommand;
@@ -13,24 +13,19 @@ import prestudy.framework.spring.domain.board.BoardRepository;
 import prestudy.framework.spring.domain.comment.Comment;
 import prestudy.framework.spring.domain.comment.CommentRepository;
 import prestudy.framework.spring.domain.user.User;
-import prestudy.framework.spring.domain.user.UserRepository;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final JwtRequestUtils jwtRequestUtils;
-
-    private final UserRepository userRepository;
+    private final AuthenticationUserProvider userProvider;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
     public CommentResponse createComment(CommentCreateCommand command) {
-        User user = getCurrentUser();
-
-        Board board = boardRepository.findById(command.getBoardId())
-            .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+        User user = userProvider.authenticatedUser();
+        Board board = findBoardBy(command.getBoardId());
 
         Comment comment = Comment.builder()
             .content(command.getContent())
@@ -39,38 +34,30 @@ public class CommentService {
             .build();
 
         commentRepository.save(comment);
-
         return CommentResponse.of(comment);
     }
 
     public CommentResponse updateComment(CommentUpdateCommand command) {
-        User user = getCurrentUser();
+        User user = userProvider.authenticatedUser();
         Comment comment = findCommentBy(command.getId());
 
-        if (hasNotPermission(comment, user)) {
-            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
-        }
-
+        validateWriterPermission(comment, user);
         comment.updateContent(command.getContent());
 
         return CommentResponse.of(comment);
     }
 
     public void deleteComment(CommentDeleteCommand command) {
-        User user = getCurrentUser();
+        User user = userProvider.authenticatedUser();
         Comment comment = findCommentBy(command.getId());
 
-        if (hasNotPermission(comment, user)) {
-            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
-        }
-
+        validateWriterPermission(comment, user);
         commentRepository.delete(comment);
     }
 
-    private User getCurrentUser() {
-        Long userId = jwtRequestUtils.getUserId();
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalStateException("토큰이 유효하지 않습니다."));
+    private Board findBoardBy(Long id) {
+        return boardRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
     }
 
     private Comment findCommentBy(Long id) {
@@ -78,7 +65,9 @@ public class CommentService {
             .orElseThrow(() -> new IllegalArgumentException("댓글이 존재하지 않습니다."));
     }
 
-    private boolean hasNotPermission(Comment comment, User user) {
-        return comment.isNotWriter(user) && user.isNotAdmin();
+    private void validateWriterPermission(Comment comment, User user) {
+        if (comment.hasNotWriterPermission(user)) {
+            throw new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다.");
+        }
     }
 }

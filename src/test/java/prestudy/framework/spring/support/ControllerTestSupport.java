@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import prestudy.framework.spring.api.controller.board.BoardController;
 import prestudy.framework.spring.api.controller.comment.CommentController;
 import prestudy.framework.spring.api.controller.user.UserController;
-import prestudy.framework.spring.api.jwt.JwtInterceptor;
+import prestudy.framework.spring.api.authenticate.jwt.JwtInterceptor;
 import prestudy.framework.spring.api.service.board.BoardService;
 import prestudy.framework.spring.api.service.comment.CommentService;
 import prestudy.framework.spring.api.service.user.UserService;

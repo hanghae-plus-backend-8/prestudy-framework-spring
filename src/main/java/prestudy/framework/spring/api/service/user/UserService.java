@@ -2,13 +2,15 @@ package prestudy.framework.spring.api.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import prestudy.framework.spring.api.jwt.JwtProvider;
+import org.springframework.transaction.annotation.Transactional;
+import prestudy.framework.spring.api.authenticate.jwt.JwtProvider;
 import prestudy.framework.spring.api.service.user.command.UserCreateCommand;
 import prestudy.framework.spring.api.service.user.command.UserLoginCommand;
 import prestudy.framework.spring.domain.user.User;
 import prestudy.framework.spring.domain.user.UserRepository;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class UserService {
 
@@ -24,6 +26,7 @@ public class UserService {
         userRepository.save(createCommand.toEntity());
     }
 
+    @Transactional(readOnly = true)
     public String loginUser(UserLoginCommand loginCommand) {
         User findUser = userRepository.findByUsername(loginCommand.getUsername())
             .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
