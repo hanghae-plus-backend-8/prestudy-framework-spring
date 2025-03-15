@@ -2,7 +2,7 @@ package prestudy.framework.spring.api.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import prestudy.framework.spring.api.jwt.JwtProvider;
+import prestudy.framework.spring.api.authenticate.jwt.JwtProvider;
 import prestudy.framework.spring.api.service.user.command.UserCreateCommand;
 import prestudy.framework.spring.api.service.user.command.UserLoginCommand;
 import prestudy.framework.spring.domain.user.User;

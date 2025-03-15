@@ -1,4 +1,4 @@
-package prestudy.framework.spring.api.jwt;
+package prestudy.framework.spring.api.authenticate.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.method.HandlerMethod;
 import prestudy.framework.spring.api.authenticate.AuthenticationHandler;
+import prestudy.framework.spring.api.authenticate.jwt.JwtInterceptor;
+import prestudy.framework.spring.api.authenticate.jwt.JwtProvider;
 import prestudy.framework.spring.support.IntegrationTestSupport;
 
 import java.time.LocalDateTime;

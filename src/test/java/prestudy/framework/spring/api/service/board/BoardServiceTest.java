@@ -102,7 +102,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void createBoardWithInvalidToken() {
         // given
-        given(jwtRequestUtils.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
 
         BoardCreateCommand command = BoardCreateCommand.builder()
             .title("제목")
@@ -119,7 +119,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void createBoardWithInvalidUser() {
         // given
-        given(jwtRequestUtils.getUserId()).willReturn(0L);
+        given(authenticationUserProvider.getUserId()).willReturn(0L);
 
         BoardCreateCommand command = BoardCreateCommand.builder()
             .title("제목")
@@ -139,7 +139,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         User user = User.ofUser("123abc", "Password12!");
         userRepository.save(user);
 
-        given(jwtRequestUtils.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
 
         BoardCreateCommand createCommand = BoardCreateCommand.builder()
             .title("제목")
@@ -223,7 +223,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void updateBoardWithInvalidToken() {
         // given
-        given(jwtRequestUtils.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
 
         BoardUpdateCommand command = BoardUpdateCommand.builder()
             .id(1L)
@@ -241,7 +241,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void updateBoardWithInvalidUser() {
         // given
-        given(jwtRequestUtils.getUserId()).willReturn(0L);
+        given(authenticationUserProvider.getUserId()).willReturn(0L);
 
         BoardUpdateCommand command = BoardUpdateCommand.builder()
             .id(1L)
@@ -262,7 +262,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         User user = User.ofUser("abcd1", "Password12!");
         userRepository.save(user);
 
-        given(jwtRequestUtils.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         Board savedBoard = boardRepository.save(board);
@@ -290,7 +290,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         userRepository.save(user);
         userRepository.save(tokenUser);
 
-        given(jwtRequestUtils.getUserId()).willReturn(tokenUser.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(tokenUser.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         boardRepository.save(board);
@@ -316,7 +316,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         userRepository.save(user);
         userRepository.save(admin);
 
-        given(jwtRequestUtils.getUserId()).willReturn(admin.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(admin.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         boardRepository.save(board);
@@ -342,7 +342,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         User user = User.ofUser("abcd1", "Password12!");
         userRepository.save(user);
 
-        given(jwtRequestUtils.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         Board savedBoard = boardRepository.save(board);
@@ -366,7 +366,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void deleteBoardWithInvalidToken() {
         // given
-        given(jwtRequestUtils.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.getUserId()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
 
         BoardDeleteCommand command = BoardDeleteCommand.of(1L);
 
@@ -380,7 +380,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void deleteBoardWithInvalidUser() {
         // given
-        given(jwtRequestUtils.getUserId()).willReturn(0L);
+        given(authenticationUserProvider.getUserId()).willReturn(0L);
 
         BoardDeleteCommand command = BoardDeleteCommand.of(1L);
 
@@ -397,7 +397,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         User user = User.ofUser("abcd1", "Password12!");
         userRepository.save(user);
 
-        given(jwtRequestUtils.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         Board savedBoard = boardRepository.save(board);
@@ -420,7 +420,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         userRepository.save(user);
         userRepository.save(tokenUser);
 
-        given(jwtRequestUtils.getUserId()).willReturn(tokenUser.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(tokenUser.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         boardRepository.save(board);
@@ -442,7 +442,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         userRepository.save(user);
         userRepository.save(admin);
 
-        given(jwtRequestUtils.getUserId()).willReturn(admin.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(admin.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         boardRepository.save(board);
@@ -464,7 +464,7 @@ class BoardServiceTest extends IntegrationTestSupport {
         User user = User.ofUser("abcd1", "Password12!");
         userRepository.save(user);
 
-        given(jwtRequestUtils.getUserId()).willReturn(user.getId());
+        given(authenticationUserProvider.getUserId()).willReturn(user.getId());
 
         Board board = createBoardEntity("제목", "내용", user);
         boardRepository.save(board);

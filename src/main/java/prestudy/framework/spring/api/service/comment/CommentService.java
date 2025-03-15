@@ -4,7 +4,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
-import prestudy.framework.spring.api.jwt.JwtRequestUtils;
+import prestudy.framework.spring.api.authenticate.AuthenticationUserProvider;
 import prestudy.framework.spring.api.service.comment.command.CommentCreateCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentDeleteCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentUpdateCommand;
@@ -20,7 +20,7 @@ import prestudy.framework.spring.domain.user.UserRepository;
 @RequiredArgsConstructor
 public class CommentService {
 
-    private final JwtRequestUtils jwtRequestUtils;
+    private final AuthenticationUserProvider authenticationUserProvider;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
@@ -67,7 +67,7 @@ public class CommentService {
     }
 
     private User getCurrentUser() {
-        Long userId = jwtRequestUtils.getUserId();
+        Long userId = authenticationUserProvider.getUserId();
         return userRepository.findById(userId)
             .orElseThrow(() -> new IllegalStateException("토큰이 유효하지 않습니다."));
     }

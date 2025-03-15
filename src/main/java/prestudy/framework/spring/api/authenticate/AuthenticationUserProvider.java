@@ -1,4 +1,4 @@
-package prestudy.framework.spring.api.jwt;
+package prestudy.framework.spring.api.authenticate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Slf4j
 @Component
-public class JwtRequestUtils {
+public class AuthenticationUserProvider {
 
     public Long getUserId() {
         HttpServletRequest request = getCurrentRequest();

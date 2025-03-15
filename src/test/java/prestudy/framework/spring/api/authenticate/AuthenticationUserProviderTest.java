@@ -1,4 +1,4 @@
-package prestudy.framework.spring.api.jwt;
+package prestudy.framework.spring.api.authenticate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -18,10 +18,10 @@ import static org.mockito.Mockito.mockStatic;
 
 @ActiveProfiles("test")
 @SpringBootTest
-class JwtRequestUtilsTest {
+class AuthenticationUserProviderTest {
 
     @Autowired
-    private JwtRequestUtils jwtRequestUtils;
+    private AuthenticationUserProvider authenticationUserProvider;
 
     @DisplayName("Request가 올바르지 않으면 유효하지 않은 토큰 값이다.")
     @Test
@@ -31,7 +31,7 @@ class JwtRequestUtilsTest {
                 .thenReturn(null);
 
             // when & then
-            assertThatThrownBy(() -> jwtRequestUtils.getUserId())
+            assertThatThrownBy(() -> authenticationUserProvider.getUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("토큰이 유효하지 않습니다.");
         }
@@ -51,7 +51,7 @@ class JwtRequestUtilsTest {
             given(request.getAttribute("userId")).willReturn(null);
 
             // when & then
-            assertThatThrownBy(() -> jwtRequestUtils.getUserId())
+            assertThatThrownBy(() -> authenticationUserProvider.getUserId())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("토큰이 유효하지 않습니다.");
         }
@@ -71,7 +71,7 @@ class JwtRequestUtilsTest {
             given(request.getAttribute("userId")).willReturn(1L);
 
             // when
-            Long userId = jwtRequestUtils.getUserId();
+            Long userId = authenticationUserProvider.getUserId();
 
             //then
             assertThat(userId).isEqualTo(1L);

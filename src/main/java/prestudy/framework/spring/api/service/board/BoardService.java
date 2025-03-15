@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
-import prestudy.framework.spring.api.jwt.JwtRequestUtils;
+import prestudy.framework.spring.api.authenticate.AuthenticationUserProvider;
 import prestudy.framework.spring.api.service.board.command.BoardCreateCommand;
 import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final JwtRequestUtils jwtRequestUtils;
+    private final AuthenticationUserProvider authenticationUserProvider;
     private final UserRepository userRepository;
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
@@ -87,7 +87,7 @@ public class BoardService {
     }
 
     private User getCurrentUser() {
-        Long userId = jwtRequestUtils.getUserId();
+        Long userId = authenticationUserProvider.getUserId();
         return userRepository.findById(userId)
             .orElseThrow(() -> new IllegalStateException("토큰이 유효하지 않습니다."));
     }
