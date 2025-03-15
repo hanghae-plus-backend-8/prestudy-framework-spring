@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import prestudy.framework.spring.api.controller.comment.request.CommentCreateRequest;
 import prestudy.framework.spring.api.controller.comment.request.CommentUpdateRequest;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 import prestudy.framework.spring.support.ControllerTestSupport;
 
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ class CommentControllerTest extends ControllerTestSupport {
         // given
         CommentCreateRequest request = CommentCreateRequest.of("댓글 내용");
 
-        when(commentService.createComment(any())).thenThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        when(commentService.createComment(any())).thenThrow(new AuthenticationException("토큰이 유효하지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -135,7 +136,7 @@ class CommentControllerTest extends ControllerTestSupport {
         // given
         CommentUpdateRequest request = CommentUpdateRequest.of("댓글 내용 수정");
 
-        when(commentService.updateComment(any())).thenThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        when(commentService.updateComment(any())).thenThrow(new AuthenticationException("토큰이 유효하지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -156,7 +157,7 @@ class CommentControllerTest extends ControllerTestSupport {
         // given
         CommentUpdateRequest request = CommentUpdateRequest.of("댓글 내용 수정");
 
-        when(commentService.updateComment(any())).thenThrow(new IllegalStateException("작성자만 삭제/수정할 수 있습니다."));
+        when(commentService.updateComment(any())).thenThrow(new IllegalArgumentException("작성자만 삭제/수정할 수 있습니다."));
 
         // when & then
         mockMvc.perform(

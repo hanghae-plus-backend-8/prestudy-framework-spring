@@ -7,6 +7,7 @@ import prestudy.framework.spring.api.controller.board.request.BoardCreateRequest
 import prestudy.framework.spring.api.controller.board.request.BoardUpdateRequest;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
 import prestudy.framework.spring.support.ControllerTestSupport;
@@ -112,7 +113,7 @@ class BoardControllerTest extends ControllerTestSupport {
             .content("내용")
             .build();
 
-        when(boardService.createBoard(any())).thenThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        when(boardService.createBoard(any())).thenThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -233,7 +234,7 @@ class BoardControllerTest extends ControllerTestSupport {
             .build();
 
         when(boardService.updateBoard(any()))
-            .thenThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+            .thenThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         // when & then
         mockMvc.perform(
@@ -313,7 +314,7 @@ class BoardControllerTest extends ControllerTestSupport {
     @Test
     void deleteBoardWithInvalidToken() throws Exception {
         // given
-        doThrow(new IllegalStateException("토큰이 유효하지 않습니다."))
+        doThrow(new AuthenticationException("사용자가 올바르지 않습니다."))
             .when(boardService)
             .deleteBoard(any());
 

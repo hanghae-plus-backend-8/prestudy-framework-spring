@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import prestudy.framework.spring.api.controller.board.response.BoardResponse;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 import prestudy.framework.spring.api.service.board.command.BoardCreateCommand;
 import prestudy.framework.spring.api.service.board.command.BoardDeleteCommand;
 import prestudy.framework.spring.api.service.board.command.BoardUpdateCommand;
@@ -103,7 +104,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void createBoardWithInvalidToken() {
         // given
-        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         BoardCreateCommand command = BoardCreateCommand.builder()
             .title("제목")
@@ -112,8 +113,7 @@ class BoardServiceTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> boardService.createBoard(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("게시글을 작성한다.")
@@ -207,7 +207,7 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void updateBoardWithInvalidToken() {
         // given
-        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         BoardUpdateCommand command = BoardUpdateCommand.builder()
             .id(1L)
@@ -217,8 +217,7 @@ class BoardServiceTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> boardService.updateBoard(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("게시글 수정 시 게시글이 존재해야한다.")
@@ -332,14 +331,13 @@ class BoardServiceTest extends IntegrationTestSupport {
     @Test
     void deleteBoardWithInvalidToken() {
         // given
-        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         BoardDeleteCommand command = BoardDeleteCommand.of(1L);
 
         // when & then
         assertThatThrownBy(() -> boardService.deleteBoard(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("게시글 삭제 시 게시글은 존재해야한다.")

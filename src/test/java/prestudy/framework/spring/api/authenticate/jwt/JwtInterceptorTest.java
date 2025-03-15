@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.method.HandlerMethod;
 import prestudy.framework.spring.api.authenticate.AuthenticationHandler;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 import prestudy.framework.spring.support.IntegrationTestSupport;
 
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ class JwtInterceptorTest extends IntegrationTestSupport {
     private JwtProvider jwtProvider;
 
     @MockitoBean
-    private AuthenticationHandler authenticationHandler;
+    AuthenticationHandler authenticationHandler;
 
     @DisplayName("@Authentication 어노테이션이 있어야 검증을 할 수 있다.")
     @Test
@@ -62,8 +63,7 @@ class JwtInterceptorTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> jwtInterceptor.preHandle(request, response, handlerMethod))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("JWT 토큰 값이 올바르지 않으면 검증에 실패한다.")
@@ -82,8 +82,7 @@ class JwtInterceptorTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> jwtInterceptor.preHandle(request, response, handlerMethod))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("JWT 토큰 값이 만료된 토큰값이면 검증에 실패한다.")
@@ -103,8 +102,7 @@ class JwtInterceptorTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> jwtInterceptor.preHandle(request, response, handlerMethod))
-            .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("JWT 토큰 값이 정상적이면 Request attribute에 subject 정보를 저장한다.")

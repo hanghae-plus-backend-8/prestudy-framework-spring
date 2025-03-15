@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 import prestudy.framework.spring.domain.user.User;
 import prestudy.framework.spring.domain.user.UserRepository;
 
@@ -30,24 +31,26 @@ class AuthenticationUserProviderTest {
     @Autowired
     private UserRepository userRepository;
 
-    @DisplayName("Request가 올바르지 않으면 유효하지 않은 토큰 값이다.")
+    @DisplayName("인증 사용자는 요청이 유효해야한다.")
     @Test
     void authenticatedUserWithInvalidRequest() {
         try (MockedStatic<RequestContextHolder> mockRequestContextHolder = mockStatic(RequestContextHolder.class)) {
+            // given
             mockRequestContextHolder.when(RequestContextHolder::getRequestAttributes)
                 .thenReturn(null);
 
             // when & then
             assertThatThrownBy(() -> authenticationUserProvider.authenticatedUser())
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("토큰이 유효하지 않습니다.");
+                .isInstanceOf(AuthenticationException.class)
+                .hasMessage("요청이 올바르지 않습니다.");
         }
     }
 
-    @DisplayName("Request attribute가 올바르지 않으면 유효하지 않은 토큰 값이다.")
+    @DisplayName("인증 사용자는 요청 속성에 사용자 ID가 존재해야한다.")
     @Test
     void authenticatedUserWithoutAttribute() {
         try (MockedStatic<RequestContextHolder> mockRequestContextHolder = mockStatic(RequestContextHolder.class)) {
+            // given
             ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
             HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -59,8 +62,32 @@ class AuthenticationUserProviderTest {
 
             // when & then
             assertThatThrownBy(() -> authenticationUserProvider.authenticatedUser())
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("토큰이 유효하지 않습니다.");
+                .isInstanceOf(AuthenticationException.class)
+                .hasMessage("사용자 ID가 존재하지 않습니다.");
+        }
+    }
+
+    @DisplayName("인증 사용자는 유효한 사용자이여야 한다.")
+    @Test
+    void authenticatedUserWithInvalidUser() {
+        try (MockedStatic<RequestContextHolder> mockRequestContextHolder = mockStatic(RequestContextHolder.class)) {
+            // given
+            ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
+            HttpServletRequest request = mock(HttpServletRequest.class);
+
+            mockRequestContextHolder.when(RequestContextHolder::getRequestAttributes)
+                .thenReturn(attributes);
+
+            User user = User.ofUser("abcd1", "Password12!");
+            userRepository.save(user);
+
+            given(attributes.getRequest()).willReturn(request);
+            given(request.getAttribute("userId")).willReturn(user.getId() + 1);
+
+            // when & then
+            assertThatThrownBy(() -> authenticationUserProvider.authenticatedUser())
+                .isInstanceOf(AuthenticationException.class)
+                .hasMessage("사용자가 올바르지 않습니다.");
         }
     }
 
@@ -68,6 +95,7 @@ class AuthenticationUserProviderTest {
     @Test
     void authenticatedUser() {
         try (MockedStatic<RequestContextHolder> mockRequestContextHolder = mockStatic(RequestContextHolder.class)) {
+            // given
             ServletRequestAttributes attributes = mock(ServletRequestAttributes.class);
             HttpServletRequest request = mock(HttpServletRequest.class);
 
@@ -83,7 +111,7 @@ class AuthenticationUserProviderTest {
             // when
             User authenticatedUser = authenticationUserProvider.authenticatedUser();
 
-            //then
+            // then
             assertThat(authenticatedUser).isEqualTo(user);
         }
     }

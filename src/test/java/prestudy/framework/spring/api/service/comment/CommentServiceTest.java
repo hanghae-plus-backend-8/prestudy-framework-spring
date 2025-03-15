@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import prestudy.framework.spring.api.controller.comment.response.CommentResponse;
+import prestudy.framework.spring.api.exception.AuthenticationException;
 import prestudy.framework.spring.api.service.comment.command.CommentCreateCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentDeleteCommand;
 import prestudy.framework.spring.api.service.comment.command.CommentUpdateCommand;
@@ -45,7 +46,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void createCommentWithInvalidToken() {
         // given
-        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         CommentCreateCommand command = CommentCreateCommand.builder()
             .boardId(1L)
@@ -54,8 +55,7 @@ class CommentServiceTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> commentService.createComment(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("댓글 작성 시 게시글은 유효해야한다.")
@@ -107,7 +107,7 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void updateCommentWithInvalidToken() {
         // given
-        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         CommentUpdateCommand command = CommentUpdateCommand.builder()
             .id(1L)
@@ -116,8 +116,7 @@ class CommentServiceTest extends IntegrationTestSupport {
 
         // when & then
         assertThatThrownBy(() -> commentService.updateComment(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("댓글 수정 시 작성한 댓글이 존재해야한다.")
@@ -243,14 +242,13 @@ class CommentServiceTest extends IntegrationTestSupport {
     @Test
     void deleteCommentWithInvalidToken() {
         // given
-        given(authenticationUserProvider.authenticatedUser()).willThrow(new IllegalStateException("토큰이 유효하지 않습니다."));
+        given(authenticationUserProvider.authenticatedUser()).willThrow(new AuthenticationException("사용자가 올바르지 않습니다."));
 
         CommentDeleteCommand command = CommentDeleteCommand.of(1L);
 
         // when & then
         assertThatThrownBy(() -> commentService.deleteComment(command))
-            .isInstanceOf(IllegalStateException.class)
-            .hasMessage("토큰이 유효하지 않습니다.");
+            .isInstanceOf(AuthenticationException.class);
     }
 
     @DisplayName("댓글 삭제 시 작성한 댓글이 존재해야한다.")
