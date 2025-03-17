@@ -1,21 +1,29 @@
 package com.hhplus.precourse.post.controller;
 
-import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder;
-import com.hhplus.precourse.common.ControllerTestContext;
-import com.hhplus.precourse.post.service.UpdatePostService;
-import com.hhplus.precourse.post.vo.PostVo;
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-
-import java.time.LocalDateTime;
+import static org.springframework.restdocs.payload.JsonFieldType.NUMBER;
+import static org.springframework.restdocs.payload.JsonFieldType.OBJECT;
+import static org.springframework.restdocs.payload.JsonFieldType.STRING;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
-import static com.hhplus.precourse.common.ApiDocumentUtils.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.restdocs.payload.JsonFieldType.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder;
+import static com.hhplus.precourse.common.ApiDocumentUtils.fieldsWithBasic;
+import static com.hhplus.precourse.common.ApiDocumentUtils.preprocessRequest;
+import static com.hhplus.precourse.common.ApiDocumentUtils.preprocessResponse;
+import com.hhplus.precourse.common.ControllerTestContext;
+import static com.hhplus.precourse.common.TestUserDetailsConfig.USER_DETAILS_BEAN_NAME;
+import com.hhplus.precourse.post.service.UpdatePostService;
+import com.hhplus.precourse.post.vo.PostVo;
 
 class UpdatePostControllerTest extends ControllerTestContext {
     private static final String TAG = Tags.POST.tagName();
@@ -24,15 +32,16 @@ class UpdatePostControllerTest extends ControllerTestContext {
     @MockBean
     private UpdatePostService service;
 
+    @WithUserDetails(userDetailsServiceBeanName = USER_DETAILS_BEAN_NAME)
     @Test
     void success() {
         BDDMockito.given(service.update(any()))
             .willReturn(new PostVo(
                 1L,
+                1L,
                 "작성자명",
                 "제목",
                 "내용",
-                "비밀번호",
                 LocalDateTime.now(),
                 LocalDateTime.now()
             ));
@@ -40,11 +49,11 @@ class UpdatePostControllerTest extends ControllerTestContext {
         var body = new CreatePostController.Request(
             "수정할 작성자명",
             "수정할 제목",
-            "수정할 내용",
-            "비밀번호"
+            "수정할 내용"
         );
 
         given()
+            .header(authorizationHeader())
             .body(body)
             .when()
             .put("/posts/{id}", "1")
@@ -58,11 +67,11 @@ class UpdatePostControllerTest extends ControllerTestContext {
                         .description(DESCRIPTION),
                     preprocessRequest(),
                     preprocessResponse(),
+                    requestHeaderWithAuthorization(),
                     requestFields(
                         fieldWithPath("author").type(STRING).description("수정할 작성자명"),
                         fieldWithPath("title").type(STRING).description("수정할 제목"),
-                        fieldWithPath("content").type(STRING).description("수정할 내용"),
-                        fieldWithPath("password").type(STRING).description("비밀번호")
+                        fieldWithPath("content").type(STRING).description("수정할 내용")
                     ),
                     responseFields(
                         fieldsWithBasic(

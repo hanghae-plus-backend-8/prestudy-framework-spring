@@ -8,11 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import java.time.LocalDateTime;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.hhplus.precourse.common.ApiDocumentUtils.*;
+import static com.hhplus.precourse.common.TestUserDetailsConfig.USER_DETAILS_BEAN_NAME;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 
@@ -23,15 +25,16 @@ class CreatePostControllerTest extends ControllerTestContext {
     @MockBean
     private CreatePostService service;
 
+    @WithUserDetails(userDetailsServiceBeanName = USER_DETAILS_BEAN_NAME)
     @Test
     void success() {
         BDDMockito.given(service.create(BDDMockito.any()))
             .willReturn(new PostVo(
                 1L,
+                1L,
                 "작성자명",
                 "제목",
                 "내용",
-                "비밀번호",
                 LocalDateTime.now(),
                 LocalDateTime.now()
             ));
@@ -39,11 +42,11 @@ class CreatePostControllerTest extends ControllerTestContext {
         var body = new CreatePostController.Request(
             "작성자명",
             "제목",
-            "내용",
-            "비밀번호"
+            "내용"
         );
 
         given()
+            .header(authorizationHeader())
             .body(body)
             .when()
             .post("/posts")
@@ -57,11 +60,11 @@ class CreatePostControllerTest extends ControllerTestContext {
                         .description(DESCRIPTION),
                     preprocessRequest(),
                     preprocessResponse(),
+                    requestHeaderWithAuthorization(),
                     requestFields(
                         fieldWithPath("author").type(STRING).description("작성자명"),
                         fieldWithPath("title").type(STRING).description("제목"),
-                        fieldWithPath("content").type(STRING).description("내용"),
-                        fieldWithPath("password").type(STRING).description("비밀번호")
+                        fieldWithPath("content").type(STRING).description("내용")
                     ),
                     responseFields(
                         fieldsWithBasic(

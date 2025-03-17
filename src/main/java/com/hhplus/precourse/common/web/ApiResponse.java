@@ -81,10 +81,65 @@ public record ApiResponse<T>(
         );
     }
 
+    public static ApiResponse<Void> unauthorized(Status status,
+                                                 String message) {
+        return new ApiResponse<>(
+            status,
+            message,
+            null
+        );
+    }
+
+    public static ApiResponse<Void> unauthorized(String message) {
+        return unauthorized(
+            ApiResponseStatus.UNAUTHORIZED,
+            message
+        );
+    }
+
+    public static ApiResponse<Void> unauthorized() {
+        return unauthorized(
+            ApiResponseStatus.UNAUTHORIZED.message()
+        );
+    }
+
+    public static ApiResponse<Void> forbidden() {
+        return new ApiResponse<>(
+            ApiResponseStatus.FORBIDDEN,
+            ApiResponseStatus.FORBIDDEN.message(),
+            null
+        );
+    }
+
+    public static ApiResponse<Void> notFound(Status status,
+                                             String message) {
+        return new ApiResponse<>(
+            status,
+            message,
+            null
+        );
+    }
+
+    public static ApiResponse<Void> notFound(String message) {
+        return notFound(
+            ApiResponseStatus.NOT_FOUND,
+            message
+        );
+    }
+
+    public static ApiResponse<Void> notFound() {
+        return notFound(
+            ApiResponseStatus.NOT_FOUND.message()
+        );
+    }
+
     enum ApiResponseStatus implements Status {
         SUCCESS("성공"),
         FAILURE( "요청에 실패하였습니다."),
-        ERROR( "에러가 발생하였습니다.");
+        ERROR( "에러가 발생하였습니다."),
+        UNAUTHORIZED("토큰이 유효하지 않습니다."),
+        FORBIDDEN("권한이 없습니다."),
+        NOT_FOUND("해당 리소스는 존재하지 않습니다.");
 
         private final String message;
 

@@ -28,7 +28,7 @@ class CreateUserServiceTest {
         // given
         var command = new CreateUserService.Command(
             "test1234",
-            "password123"
+            "password123*"
         );
         given(userRepository.existsByName(command.name())).willReturn(false);
 
@@ -58,6 +58,6 @@ class CreateUserServiceTest {
 
         // then
         assertThat(throwable).isInstanceOf(BadRequestException.class)
-            .hasMessageContaining(ALREADY_EXIST_USER.message());
+            .hasMessageContaining("중복된 username 입니다.");
     }
 }

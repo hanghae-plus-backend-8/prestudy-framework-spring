@@ -17,33 +17,33 @@ class PostTest {
         @Test
         void success() {
             // given
+            var userId = 1L;
             var author = "작성자명";
             var title = "제목";
             var content = "내용";
-            var password = "비밀번호";
 
             // when
-            var post = new Post(author, title, content, password);
+            var post = new Post(userId, author, title, content);
 
             // then
             assertThat(post.author()).isEqualTo(author);
             assertThat(post.title()).isEqualTo(title);
             assertThat(post.content()).isEqualTo(content);
-            assertThat(post.password()).isEqualTo(password);
         }
 
         @Test
         void 값검증_실패시_에외발생() {
             // given
+            var userId = 1L;
             var author = "작성자명";
             var title = "제목";
-            var content = "내용";
 
             // when
-            var throwable = catchThrowable(() -> new Post(author, title, content, null));
+            var throwable = catchThrowable(() -> new Post(userId, author, title, null));
 
             // then
-            assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
+            assertThat(throwable).isInstanceOf(DomainException.class)
+                .hasMessage("내용은 필수 값입니다.");
         }
     }
 
@@ -59,60 +59,12 @@ class PostTest {
             var content = "수정된 내용";
 
             // when
-            post.update(author, title, content, post.password());
+            post.update(author, title, content);
 
             // then
             assertThat(post.author()).isEqualTo(author);
             assertThat(post.title()).isEqualTo(title);
             assertThat(post.content()).isEqualTo(content);
-        }
-
-        @Test
-        void 비밀번호가_일치하지_않으면_에외발생() {
-            // given
-            var post = new Post("작성자명", "제목", "내용", "비밀번호");
-            var author = "수정된 작성자명";
-            var title = "수정된 제목";
-            var content = "수정된 내용";
-            var password = "다른 비밀번호";
-
-            // when
-            var throwable = catchThrowable(() -> post.update(author, title, content, password));
-
-            // then
-            assertThat(throwable).isInstanceOf(DomainException.class)
-                .hasMessage(PASSWORD_NOT_MATCHED.message());
-        }
-    }
-
-    @DisplayName("비밀번호 검증 테스트")
-    @Nested
-    class ValidatePasswordTest {
-        @Test
-        void success() {
-            // given
-            var post = new PostFixture().build();
-            var password = post.password();
-
-            // when
-            var throwable = catchThrowable(() ->post.validatePassword(password));
-
-            // then
-            assertThat(throwable).isNull();
-        }
-
-        @Test
-        void 비밀번호가_일치하지_않으면_에외발생() {
-            // given
-            var post = new PostFixture().build();
-            var password = "다른 비밀번호";
-
-            // when
-            var throwable = catchThrowable(() -> post.validatePassword(password));
-
-            // then
-            assertThat(throwable).isInstanceOf(DomainException.class)
-                .hasMessage(PASSWORD_NOT_MATCHED.message());
         }
     }
 }

@@ -1,10 +1,15 @@
 package com.hhplus.precourse.user.domain;
 
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.hhplus.precourse.common.exception.DomainException;
 
@@ -65,7 +70,7 @@ class UserTest {
         void success() {
             // given
             var user = new UserFixture()
-                .setPassword("test1234")
+                .setPassword("test1234!")
                 .build();
 
             // when
@@ -75,35 +80,64 @@ class UserTest {
             assertThat(throwable).isNull();
         }
 
-        @Test
-        void 비밀번호_길이_검증_실패_케이스() {
+        @ParameterizedTest
+        @MethodSource("passwordLengthArguments")
+        void 비밀번호_길이_검증(String password, boolean expected) {
             // given
             var user = new UserFixture()
-                .setPassword("1234567")
+                .setPassword(password)
                 .build();
 
             // when
             var throwable = catchThrowable(user::validatePassword);
 
             // then
-            assertThat(throwable).isInstanceOf(DomainException.class)
-                .hasMessageContaining("비밀번호는 8자 이상 15자 이하로 입력해주세요.");
+            if (expected) {
+                assertThat(throwable).isNull();
+            } else {
+                assertThat(throwable).isInstanceOf(DomainException.class)
+                    .hasMessageContaining("비밀번호는 8자 이상 15자 이하로 입력해주세요.");
+            }
         }
 
+        static Stream<Arguments> passwordLengthArguments() {
+            return Stream.of(
+                Arguments.of("1".repeat(7), false),
+                Arguments.of("1".repeat(16), false),
+                Arguments.of("tet12345!", true),
+                Arguments.of("test12345678^^", true)
+            );
+        }
 
-        @Test
-        void 비밀번호_패턴_검증_실패_케이스() {
+        @ParameterizedTest
+        @MethodSource("passwordPatternArguments")
+        void 비밀번호_패턴_검증(String password, boolean expected) {
             // given
             var user = new UserFixture()
-                .setPassword("test1234!$")
+                .setPassword(password)
                 .build();
 
             // when
             var throwable = catchThrowable(user::validatePassword);
 
             // then
-            assertThat(throwable).isInstanceOf(DomainException.class)
-                .hasMessageContaining("비밀번호는 알파벳 대소문자, 숫자로 구성되어야합니다.");
+            if (expected) {
+                assertThat(throwable).isNull();
+            } else {
+                assertThat(throwable).isInstanceOf(DomainException.class)
+                    .hasMessageContaining("비밀번호는 알파벳 대소문자, 숫자, 특수문자를 모두 포함해야 합니다.");
+            }
+        }
+
+        static Stream<Arguments> passwordPatternArguments() {
+            return Stream.of(
+                Arguments.of("test1234", false),
+                Arguments.of("test!@#$", false),
+                Arguments.of("12345678", false),
+                Arguments.of("!1234567!", false),
+                Arguments.of("test1234!", true),
+                Arguments.of("1244*_15mm", true)
+            );
         }
     }
 
@@ -114,7 +148,7 @@ class UserTest {
         void success() {
             // given
             var user = new UserFixture()
-                .setPassword("test1234")
+                .setPassword("test1234!")
                 .build();
 
             // when
@@ -128,11 +162,11 @@ class UserTest {
         void 비밀번호_불일치_케이스() {
             // given
             var user = new UserFixture()
-                .setPassword("test1234")
+                .setPassword("test1234!")
                 .build();
 
             // when
-            var isMatch = user.matchPassword("test12345");
+            var isMatch = user.matchPassword("test12345!");
 
             // then
             assertThat(isMatch).isFalse();

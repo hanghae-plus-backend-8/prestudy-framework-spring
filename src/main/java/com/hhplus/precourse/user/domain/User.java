@@ -1,18 +1,18 @@
 package com.hhplus.precourse.user.domain;
 
+import java.util.Objects;
+
 import com.hhplus.precourse.common.entity.BaseEntity;
 import com.hhplus.precourse.common.exception.DomainException;
 import com.hhplus.precourse.common.support.Status;
+import static com.hhplus.precourse.user.domain.User.ExceptionStatus.INVALID_PARAMETER;
+
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-
-import java.util.Objects;
-
-import static com.hhplus.precourse.user.domain.User.ExceptionStatus.INVALID_PARAMETER;
 
 @Entity
 @Table(name = "users")
@@ -23,13 +23,19 @@ public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     public User(String name,
                 String password) {
         this.name = name;
         this.password = password;
+        this.role = RoleType.USER;
         validateValues();
     }
 
@@ -61,8 +67,8 @@ public class User extends BaseEntity {
             throw new DomainException(INVALID_PARAMETER, "비밀번호는 8자 이상 15자 이하로 입력해주세요.");
         }
 
-        if (!password.matches("^[a-zA-Z0-9]*$")) {
-            throw new DomainException(INVALID_PARAMETER, "비밀번호는 알파벳 대소문자, 숫자로 구성되어야합니다.");
+        if (!password.matches("^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#$%^&*()\\-_=+\\\\|\\[\\]{};:'\",.<>/?]).*$")) {
+            throw new DomainException(INVALID_PARAMETER, "비밀번호는 알파벳 대소문자, 숫자, 특수문자를 모두 포함해야 합니다.");
         }
     }
 
@@ -72,6 +78,10 @@ public class User extends BaseEntity {
 
     public boolean notMatchPassword(String password) {
         return !matchPassword(password);
+    }
+
+    public enum RoleType {
+        ADMIN, USER
     }
 
     @Getter

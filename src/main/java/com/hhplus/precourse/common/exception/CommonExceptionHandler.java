@@ -6,6 +6,8 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.stream.Collectors;
 
@@ -64,9 +67,10 @@ public class CommonExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({
         HttpRequestMethodNotSupportedException.class,
+        HttpMessageNotReadableException.class,
         MethodArgumentTypeMismatchException.class,
         MissingServletRequestParameterException.class,
-        MultipartException.class
+        MultipartException.class,
     })
     public ApiResponse<Void> handle4xx(Exception e,
                                        HttpServletRequest request) {
@@ -102,7 +106,16 @@ public class CommonExceptionHandler {
                                                HttpServletRequest request) {
         log.error("[{}] 해당 리소스는 존재하지 않습니다.", request.getRequestURI(), e);
 
-        return ApiResponse.fail(e.status(), e.message());
+        return ApiResponse.notFound(e.status(), e.message());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ApiResponse<Void> noResourceFoundException(NoResourceFoundException e,
+                                                      HttpServletRequest request) {
+        log.error("[{}] 해당 리소스는 존재하지 않습니다.", request.getRequestURI(), e);
+
+        return ApiResponse.notFound();
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -121,5 +134,23 @@ public class CommonExceptionHandler {
         log.warn("[{}] 도메인 오류가 발생하였습니다.", request.getRequestURI(), e);
 
         return ApiResponse.fail(e.status(), e.message());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedException.class)
+    public ApiResponse<Void> unauthorizedException(UnauthorizedException e,
+                                                   HttpServletRequest request) {
+        log.warn("[{}] 인증 오류가 발생하였습니다.", request.getRequestURI(), e);
+
+        return ApiResponse.unauthorized(e.status(), e.message());
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    public ApiResponse<Void> accessDeniedException(AccessDeniedException e,
+                                                   HttpServletRequest request) {
+        log.warn("[{}] 접근 권한이 없습니다.", request.getRequestURI(), e);
+
+        return ApiResponse.forbidden();
     }
 }

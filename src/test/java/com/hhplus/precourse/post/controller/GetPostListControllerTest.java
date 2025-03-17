@@ -32,10 +32,10 @@ class GetPostListControllerTest extends ControllerTestContext {
                 List.of(
                     new PostVo(
                         1L,
+                        1L,
                         "작성자명",
                         "제목",
                         "내용",
-                        "비밀번호",
                         LocalDateTime.now(),
                         LocalDateTime.now()
                     )
