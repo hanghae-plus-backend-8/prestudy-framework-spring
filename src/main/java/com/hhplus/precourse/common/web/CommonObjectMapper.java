@@ -57,13 +57,13 @@ public class CommonObjectMapper extends ObjectMapper {
             addSerializer(
                 LocalDateTime.class,
                 new LocalDateTimeSerializer(
-                    DateTimeFormatter.ISO_DATE_TIME
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
                 )
             );
             addSerializer(
                 ZonedDateTime.class,
                 new ZonedDateTimeSerializer(
-                    DateTimeFormatter.ISO_DATE_TIME
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
                 )
             );
             addDeserializer(
