@@ -20,10 +20,11 @@ public class JwtAspect {
     public void authCheck() {
         String token = httpServletRequest.getHeader("Authorization");
 
-        if(token == null || token.startsWith("Bearer ")) {
+        if(token == null || !token.startsWith("Bearer ")) {
             throw new JwtException("유효하지 않은 JWT 토큰입니다.");
         }
 
+        token = token.substring(7);
         jwtUtil.validateToken(token);
 
     }
