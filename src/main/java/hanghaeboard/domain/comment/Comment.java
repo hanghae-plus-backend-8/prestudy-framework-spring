@@ -1,7 +1,7 @@
-package hanghaeboard.domain.board;
-
+package hanghaeboard.domain.comment;
 
 import hanghaeboard.domain.BaseEntity;
+import hanghaeboard.domain.board.Board;
 import hanghaeboard.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,44 +9,39 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Board extends BaseEntity {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "board_id")
+    @Column(name = "comment_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String title;
-
     private String content;
 
-    public void changeBoard(String title, String content){
-        this.title = title;
+    public void modifyContent(String content) {
         this.content = content;
     }
 
-    public boolean isNotWriter(String username){
-        return !this.getUser().getUsername().equals(username);
-    }
-
-    public String getUsername(){
-        return this.user.getUsername();
+    public boolean isNotWriteUser(String username){
+        return !this.user.getUsername().equals(username);
     }
 
     @Builder
-    private Board(Long id, User user, String title, String content, LocalDateTime createdDatetime) {
+    private Comment(Long id, Board board, User user, String content) {
         this.id = id;
+        this.board = board;
         this.user = user;
-        this.title = title;
         this.content = content;
     }
 }

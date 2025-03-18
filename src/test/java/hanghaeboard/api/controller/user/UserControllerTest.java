@@ -7,6 +7,7 @@ import hanghaeboard.api.exception.exception.InvalidPasswordException;
 import hanghaeboard.api.service.user.UserService;
 import hanghaeboard.api.service.user.response.FindUser;
 import hanghaeboard.api.service.user.response.LoginResponse;
+import hanghaeboard.domain.user.Role;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,125 +69,20 @@ class UserControllerTest {
                 ;
     }
 
-    @DisplayName("회원가입 시 username이 4글자 이하일 시 회원가입을 할 수 없다.")
+    @DisplayName("관리자 계정으로 회원가입을 할 수 있다.")
     @Test
-    void join_usernameMinLength() throws Exception {
+    void join_admin()  throws Exception{
+        // given
         CreateUserRequest request = CreateUserRequest.builder()
-                .username("yep")
+                .username("yeop")
                 .password("12345678")
-                .build();
-
-        FindUser response = FindUser.builder()
-                .userId(1L)
-                .username("yep")
-                .build();
-
-        when(userService.join(any())).thenReturn(response);
-
-        // when // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
-                        .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("아이디는 4글자 이상, 10글자 이하여야 합니다."))
-                .andExpect(jsonPath("$.data").isEmpty())
-        ;
-    }
-
-    @DisplayName("회원가입 시 username이 10글자 이상일 시 회원가입을 할 수 없다.")
-    @Test
-    void join_usernameMaxLength() throws Exception {
-        CreateUserRequest request = CreateUserRequest.builder()
-                .username("yeopyeopyep")
-                .password("12345678")
-                .build();
-
-        FindUser response = FindUser.builder()
-                .userId(1L)
-                .username("yeopye")
-                .build();
-
-        when(userService.join(any())).thenReturn(response);
-
-        // when // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
-                        .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("아이디는 4글자 이상, 10글자 이하여야 합니다."))
-                .andExpect(jsonPath("$.data").isEmpty())
-        ;
-    }
-
-    @DisplayName("회원가입 시 아이디는 소문자 영문과 숫자로만 이루어지지 않은 경우 회원가입을 할 수 없다.")
-    @Test
-    void join_withoutUpperCase() throws Exception{
-        CreateUserRequest request = CreateUserRequest.builder()
-                .username("YEOPYEOP")
-                .password("12345678")
-                .build();
-
-        FindUser response = FindUser.builder()
-                .userId(1L)
-                .username("YEOPYEOP")
-                .build();
-
-        when(userService.join(any())).thenReturn(response);
-
-        // when // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
-                        .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("아이디는 소문자 영문과 숫자로만 이루어져야 합니다."))
-                .andExpect(jsonPath("$.data").isEmpty())
-                ;
-    }
-
-    @DisplayName("회원가입 시 비밀번호가 8글자 이하일 시 회원가입을 할 수 없다.")
-    @Test
-    void join_passwordMinLength() throws Exception {
-        CreateUserRequest request = CreateUserRequest.builder()
-                .username("yeop")
-                .password("1234567")
-                .build();
-
-        FindUser response = FindUser.builder()
-                .userId(1L)
-                .username("yep")
-                .build();
-
-        when(userService.join(any())).thenReturn(response);
-
-        // when // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
-                        .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("비밀번호는 8글자 이상, 15글자 이하여야 합니다."))
-                .andExpect(jsonPath("$.data").isEmpty())
-        ;
-    }
-
-    @DisplayName("회원가입 시 비밀번호가 15글자 이상일 시 회원가입을 할 수 없다.")
-    @Test
-    void join_passwordMaxLength() throws Exception {
-        CreateUserRequest request = CreateUserRequest.builder()
-                .username("yeop")
-                .password("1234567890123456")
+                .role(Role.ADMIN)
                 .build();
 
         FindUser response = FindUser.builder()
                 .userId(1L)
                 .username("yeop")
+                .role(Role.ADMIN)
                 .build();
 
         when(userService.join(any())).thenReturn(response);
@@ -196,37 +92,13 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(request))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("비밀번호는 8글자 이상, 15글자 이하여야 합니다."))
-                .andExpect(jsonPath("$.data").isEmpty())
-        ;
-    }
-
-    @DisplayName("회원가입 시 비밀번호는 소문자 혹은 대문자 영문과 숫자로만 이루어지지 않은 경우 회원가입을 할 수 없다.")
-    @Test
-    void join_withoutSpecialCharacter() throws Exception{
-        CreateUserRequest request = CreateUserRequest.builder()
-                .username("yeop")
-                .password("yeop!@###")
-                .build();
-
-        FindUser response = FindUser.builder()
-                .userId(1L)
-                .username("yeop")
-                .build();
-
-        when(userService.join(any())).thenReturn(response);
-
-        // when // then
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/users")
-                        .content(objectMapper.writeValueAsString(request))
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.code").value("400"))
-                .andExpect(jsonPath("$.message").value("비밀번호는 소문자 혹은 대문자 영문과 숫자로만 이루어져야 합니다."))
-                .andExpect(jsonPath("$.data").isEmpty())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.message").value("OK"))
+                .andExpect(jsonPath("$.data").isNotEmpty())
+                .andExpect(jsonPath("$.data.userId").value(1))
+                .andExpect(jsonPath("$.data.username").value("yeop"))
+                .andExpect(jsonPath("$.data.role").value("ADMIN"))
         ;
     }
 

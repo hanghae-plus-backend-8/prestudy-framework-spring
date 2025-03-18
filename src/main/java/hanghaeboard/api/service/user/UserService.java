@@ -13,6 +13,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -36,14 +37,14 @@ public class UserService {
 
         User savedUser = userRepository.save(request.toEntity());
 
-        return FindUser.of(savedUser);
+        return FindUser.from(savedUser);
     }
 
     public FindUser findUserById(Long id){
         User findUser = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("일치하는 회원이 없습니다."));
 
-        return FindUser.of(findUser);
+        return FindUser.from(findUser);
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -55,7 +56,7 @@ public class UserService {
             throw new InvalidPasswordException("비밀번호가 올바르지 않습니다.");
         }
 
-        String token = jwtUtil.generateToken(request.getUsername());
+        String token = jwtUtil.generateToken(findUser, LocalDateTime.now());
 
         return LoginResponse.builder().jwtToken(token).build();
     }
