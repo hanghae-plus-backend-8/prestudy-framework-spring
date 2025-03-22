@@ -1,5 +1,8 @@
 package com.hhplus.precourse.integration;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.hhplus.precourse.comment.domain.Comment;
+import com.hhplus.precourse.comment.domain.CommentFixture;
+import com.hhplus.precourse.comment.repository.CommentRepository;
 import com.hhplus.precourse.common.IntegrationTest;
 import com.hhplus.precourse.common.component.JwtTokenManager;
 import com.hhplus.precourse.common.support.utils.JsonUtils;
@@ -30,10 +36,13 @@ public class PostIntegrationTest extends IntegrationTest {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
     private JwtTokenManager jwtTokenManager;
     private String jwtToken;
     private User savedUser;
     private Post savedPost;
+    private List<Comment> savedComments;
 
     @BeforeEach
     void setUp() {
@@ -41,6 +50,12 @@ public class PostIntegrationTest extends IntegrationTest {
         this.savedUser = userRepository.save(user);
         var post = new PostFixture().setUserId(savedUser.id()).build();
         this.savedPost = postRepository.save(post);
+        var comments = List.of(
+            new CommentFixture().setId(1L).setUserId(savedUser.id()).setPostId(savedPost.id()).setContent("댓글1").setCreatedAt(LocalDateTime.now().minusHours(1)).build(),
+            new CommentFixture().setId(2L).setUserId(savedUser.id()).setPostId(savedPost.id()).setContent("댓글2").setCreatedAt(LocalDateTime.now()).build()
+        );
+        commentRepository.saveAll(comments);
+        this.savedComments = comments;
         this.jwtToken = jwtTokenManager.issue(savedUser.id(), savedUser.name());
     }
 
@@ -56,7 +71,14 @@ public class PostIntegrationTest extends IntegrationTest {
             .andExpect(jsonPath("$.data[0].author").value(savedPost.author()))
             .andExpect(jsonPath("$.data[0].content").value(savedPost.content()))
             .andExpect(jsonPath("$.data[0].createdAt").exists())
-            .andExpect(jsonPath("$.data[0].updatedAt").exists());
+            .andExpect(jsonPath("$.data[0].updatedAt").exists())
+            .andExpect(jsonPath("$.data[0].comments").isArray())
+            .andExpect(jsonPath("$.data[0].comments[0].id").isNumber())
+            .andExpect(jsonPath("$.data[0].comments[0].userId").value(savedComments.get(1).userId()))
+            .andExpect(jsonPath("$.data[0].comments[0].postId").value(savedComments.get(1).postId()))
+            .andExpect(jsonPath("$.data[0].comments[0].content").value(savedComments.get(1).content()))
+            .andExpect(jsonPath("$.data[0].comments[0].createdAt").exists())
+            .andExpect(jsonPath("$.data[0].comments[0].updatedAt").exists());
     }
 
     @DisplayName("게시글 상세 조회")
@@ -71,7 +93,14 @@ public class PostIntegrationTest extends IntegrationTest {
             .andExpect(jsonPath("$.data.author").value(savedPost.author()))
             .andExpect(jsonPath("$.data.content").value(savedPost.content()))
             .andExpect(jsonPath("$.data.createdAt").exists())
-            .andExpect(jsonPath("$.data.updatedAt").exists());
+            .andExpect(jsonPath("$.data.updatedAt").exists())
+            .andExpect(jsonPath("$.data.comments").isArray())
+            .andExpect(jsonPath("$.data.comments[0].id").isNumber())
+            .andExpect(jsonPath("$.data.comments[0].userId").value(savedComments.get(1).userId()))
+            .andExpect(jsonPath("$.data.comments[0].postId").value(savedComments.get(1).postId()))
+            .andExpect(jsonPath("$.data.comments[0].content").value(savedComments.get(1).content()))
+            .andExpect(jsonPath("$.data.comments[0].createdAt").exists())
+            .andExpect(jsonPath("$.data.comments[0].updatedAt").exists());
     }
 
     @DisplayName("게시글 생성")

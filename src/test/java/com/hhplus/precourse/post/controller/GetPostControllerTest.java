@@ -4,6 +4,8 @@ import com.epages.restdocs.apispec.ResourceSnippetParametersBuilder;
 import com.hhplus.precourse.common.ControllerTestContext;
 import com.hhplus.precourse.post.service.DeletePostService;
 import com.hhplus.precourse.post.service.GetPostService;
+import com.hhplus.precourse.post.vo.PostCommentVo;
+import com.hhplus.precourse.post.vo.PostDetails;
 import com.hhplus.precourse.post.vo.PostVo;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
@@ -11,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.document;
 import static com.hhplus.precourse.common.ApiDocumentUtils.*;
@@ -34,14 +37,24 @@ class GetPostControllerTest extends ControllerTestContext {
     @Test
     void success() {
         BDDMockito.given(service.get(anyLong()))
-            .willReturn(new PostVo(
+            .willReturn(new PostDetails(
                 1L,
                 1L,
                 "작성자명",
                 "제목",
                 "내용",
                 LocalDateTime.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                List.of(
+                    new PostCommentVo(
+                        1L,
+                        1L,
+                        1L,
+                        "댓글 내용",
+                        LocalDateTime.now(),
+                        LocalDateTime.now()
+                    )
+                )
             ));
 
         given()
@@ -61,11 +74,19 @@ class GetPostControllerTest extends ControllerTestContext {
                         fieldsWithBasic(
                             fieldWithPath("data").type(OBJECT).description("응답 데이터"),
                             fieldWithPath("data.id").type(NUMBER).description("게시글 ID"),
+                            fieldWithPath("data.userId").type(NUMBER).description("작성자 ID"),
                             fieldWithPath("data.title").type(STRING).description("제목"),
                             fieldWithPath("data.author").type(STRING).description("작성자명"),
                             fieldWithPath("data.content").type(STRING).description("내용"),
                             fieldWithPath("data.createdAt").type(STRING).description("생성일시"),
-                            fieldWithPath("data.updatedAt").type(STRING).description("수정일시")
+                            fieldWithPath("data.updatedAt").type(STRING).description("수정일시"),
+                            fieldWithPath("data.comments").type(ARRAY).description("댓글 목록"),
+                            fieldWithPath("data.comments[].id").type(NUMBER).description("댓글 ID"),
+                            fieldWithPath("data.comments[].userId").type(NUMBER).description("댓글 작성자 ID"),
+                            fieldWithPath("data.comments[].postId").type(NUMBER).description("게시글 ID"),
+                            fieldWithPath("data.comments[].content").type(STRING).description("댓글 내용"),
+                            fieldWithPath("data.comments[].createdAt").type(STRING).description("댓글 생성일시"),
+                            fieldWithPath("data.comments[].updatedAt").type(STRING).description("댓글 수정일시")
                         )
                     )
                 )
